@@ -53,25 +53,25 @@ const initialState: FinancialState = {
   fgtsBalance: 0,
 };
 
-function calculateSummary(transactions: Transaction[], categories: Category[]): FinancialSummary {
+function calculateSummary(transactions: Transaction[], categories: Category[], fgtsBalance: number = 0): FinancialSummary {
   const now = new Date();
   const currentMonth = now.getMonth();
   const currentYear = now.getFullYear();
-  
+
   // Transações do mês atual
   const currentMonthTransactions = transactions.filter(t => {
     const transactionDate = new Date(t.date);
-    return transactionDate.getMonth() === currentMonth && 
+    return transactionDate.getMonth() === currentMonth &&
            transactionDate.getFullYear() === currentYear;
   });
 
   // Mês anterior para comparação
   const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
   const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
-  
+
   const lastMonthTransactions = transactions.filter(t => {
     const transactionDate = new Date(t.date);
-    return transactionDate.getMonth() === lastMonth && 
+    return transactionDate.getMonth() === lastMonth &&
            transactionDate.getFullYear() === lastMonthYear;
   });
 
@@ -87,8 +87,8 @@ function calculateSummary(transactions: Transaction[], categories: Category[]): 
     .filter(t => t.type === 'despesa')
     .reduce((sum, t) => sum + t.amount, 0);
 
-  const variacaoMensal = lastMonthDespesas > 0 
-    ? ((totalDespesas - lastMonthDespesas) / lastMonthDespesas) * 100 
+  const variacaoMensal = lastMonthDespesas > 0
+    ? ((totalDespesas - lastMonthDespesas) / lastMonthDespesas) * 100
     : 0;
 
   // Maiores gastos por categoria
@@ -112,12 +112,19 @@ function calculateSummary(transactions: Transaction[], categories: Category[]): 
     .sort((a, b) => b.amount - a.amount)
     .slice(0, 5);
 
+  const saldoAtual = totalReceitas - totalDespesas;
+  const availableBalanceMonth = saldoAtual;
+  const availableBalanceTotal = saldoAtual;
+
   return {
     totalReceitas,
     totalDespesas,
-    saldoAtual: totalReceitas - totalDespesas,
+    saldoAtual,
+    fgtsBalance,
     variacaoMensal,
     maioresGastos,
+    availableBalanceMonth,
+    availableBalanceTotal,
   };
 }
 
