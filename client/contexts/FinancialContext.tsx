@@ -222,10 +222,12 @@ export function FinancialProvider({ children }: FinancialProviderProps) {
   useEffect(() => {
     if (isAuthenticated && user) {
       loadTransactions();
+      getFGTSBalance();
     } else {
       // Limpar dados quando não autenticado
       dispatch({ type: 'SET_TRANSACTIONS', payload: [] });
       dispatch({ type: 'SET_CATEGORIES', payload: DEFAULT_CATEGORIES });
+      dispatch({ type: 'SET_FGTS_BALANCE', payload: 0 });
     }
   }, [isAuthenticated, user]);
 
