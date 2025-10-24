@@ -140,7 +140,7 @@ function RecentTransaction({ description, amount, category, date, type }: Recent
 }
 
 export default function CapitalDashboard() {
-  const { transactions, categories, getFilteredTransactions, addTransaction, deleteCategory, filters, setFilters } = useFinancial();
+  const { transactions, categories, getFilteredTransactions, addTransaction, deleteCategory, filters, setFilters, setFGTSBalance, fgtsBalance } = useFinancial();
   const summary = useFinancialSummary();
   const { expenseDistribution, monthlyEvolution, expenseTrend, revenueTrend } = useChartData();
   const { importFile } = useImport();
