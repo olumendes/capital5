@@ -368,6 +368,97 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
             )}
           </div>
 
+          {/* Rendimento (para receitas) */}
+          {formData.type === 'receita' && !isEditing && (
+            <div className="space-y-4 border rounded-lg p-4 bg-green-50">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="isYieldingIncome"
+                  checked={formData.isYieldingIncome}
+                  onCheckedChange={(checked) => {
+                    setFormData(prev => ({
+                      ...prev,
+                      isYieldingIncome: !!checked,
+                    }));
+                  }}
+                />
+                <Label htmlFor="isYieldingIncome" className="flex items-center gap-2 font-medium">
+                  <TrendingUp className="h-4 w-4" />
+                  Esta receita rende ou é recorrente
+                </Label>
+              </div>
+
+              {formData.isYieldingIncome && (
+                <div className="space-y-3 ml-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <Label htmlFor="yieldFrequency">Frequência do Rendimento *</Label>
+                      <Select
+                        value={formData.yieldFrequency}
+                        onValueChange={(value: RecurringFrequency) => {
+                          setFormData(prev => ({ ...prev, yieldFrequency: value }));
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="diaria">Diária</SelectItem>
+                          <SelectItem value="semanal">Semanal</SelectItem>
+                          <SelectItem value="mensal">Mensal</SelectItem>
+                          <SelectItem value="anual">Anual</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="yieldType">Tipo de Rendimento *</Label>
+                      <Select
+                        value={formData.yieldType}
+                        onValueChange={(value: RecurringType) => {
+                          setFormData(prev => ({ ...prev, yieldType: value }));
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="percentual">Percentual (%)</SelectItem>
+                          <SelectItem value="fixo">Valor Fixo (R$)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="yieldAmount">
+                      Valor do Rendimento {formData.yieldType === 'percentual' ? '(%)' : '(R$)'} *
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="yieldAmount"
+                        type="text"
+                        placeholder={formData.yieldType === 'percentual' ? '0,00' : '0,00'}
+                        value={formData.yieldAmount}
+                        onChange={(e) => {
+                          const value = formatCurrencyInput(e.target.value);
+                          setFormData(prev => ({ ...prev, yieldAmount: value }));
+                        }}
+                        className="pl-3"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <p className="text-sm text-blue-800">
+                      💡 <strong>Como funciona:</strong> Este rendimento será usado para cálculos de projeção financeira e simulações.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Parcelamento */}
           {!isEditing && (
             <div className="space-y-4 border rounded-lg p-4 bg-blue-50">
