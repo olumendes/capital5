@@ -1,0 +1,44 @@
+name = "capital-finance"
+main = "dist/server/worker.mjs"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Configuração do D1 Database
+[[d1_databases]]
+binding = "DB"
+database_name = "capital-db"
+database_id = "e4bb8a56-2f29-4c5e-a666-11133f24eb1a"
+
+# Static Assets Binding
+[env.production]
+routes = [
+  { pattern = "example.com/*", zone_name = "example.com" }
+]
+
+[[env.production.r2_buckets]]
+binding = "ASSETS"
+bucket_name = "capital-assets"
+
+# Fallback to local assets
+[build]
+command = "npm run build"
+
+[build.upload]
+format = "service-worker"
+
+# Variáveis de ambiente
+[vars]
+ENVIRONMENT = "production"
+
+
+
+# Configuração para desenvolvimento local
+[env.development]
+[env.development.vars]
+ENVIRONMENT = "development"
+
+# Bindings do D1 para desenvolvimento
+[[env.development.d1_databases]]
+binding = "DB"
+database_name = "capital-db-dev"
+database_id = "8a502eb5-f1a9-4477-975d-64ad59816e0f"
