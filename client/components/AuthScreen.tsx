@@ -134,9 +134,9 @@ export default function AuthScreen() {
                     />
                   </div>
 
-                  <Button 
-                    type="submit" 
-                    className="w-full" 
+                  <Button
+                    type="submit"
+                    className="w-full"
                     disabled={isLoading || !loginForm.email || !loginForm.password}
                   >
                     {isLoading ? (
@@ -201,19 +201,19 @@ export default function AuthScreen() {
                       placeholder="Confirme sua senha"
                       required
                     />
-                    {registerForm.password && registerForm.confirmPassword && 
+                    {registerForm.password && registerForm.confirmPassword &&
                      registerForm.password !== registerForm.confirmPassword && (
                       <p className="text-sm text-red-600 mt-1">Senhas não conferem</p>
                     )}
                   </div>
 
-                  <Button 
-                    type="submit" 
+                  <Button
+                    type="submit"
                     className="w-full"
                     disabled={
-                      isLoading || 
-                      !registerForm.name || 
-                      !registerForm.email || 
+                      isLoading ||
+                      !registerForm.name ||
+                      !registerForm.email ||
                       !registerForm.password ||
                       registerForm.password !== registerForm.confirmPassword
                     }
@@ -230,6 +230,17 @@ export default function AuthScreen() {
                 </form>
               </TabsContent>
             </Tabs>
+
+            <div className="mt-4 pt-4 border-t">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full text-xs"
+                onClick={handleTestMode}
+              >
+                Testar sem Login (Modo Teste)
+              </Button>
+            </div>
           </CardContent>
         </Card>
 
