@@ -98,11 +98,14 @@ export default function GoalProjectionModal({ goal, children, open, onOpenChange
       const monthlySavings = income - monthlyExpenses;
 
       const targetDate = new Date(goal.deadline);
-      const currentDate = new Date();
+      const currentDate = selectedMonth;
       const monthsRemaining = Math.max(1, differenceInMonths(targetDate, currentDate) + 1); // +1 para incluir o mês atual
 
       const remainingAmount = goal.remainingAmount;
-      const totalProjected = goal.currentAmount + (monthlySavings * monthsRemaining);
+
+      // Include FGTS balance in calculation if user selected it
+      const fgtsToUse = useFGTS ? fgtsBalance : 0;
+      const totalProjected = goal.currentAmount + fgtsToUse + (monthlySavings * monthsRemaining);
 
       // Verificar viabilidade considerando:
       // 1. Se o valor projetado atinge o objetivo
