@@ -265,6 +265,7 @@ export function FinancialProvider({ children }: FinancialProviderProps) {
     try {
       const savedTransactions = getObjectCookie<Transaction[]>('capital_transactions');
       const savedCategories = getObjectCookie<Category[]>('capital_categories');
+      const savedFGTS = getObjectCookie<number>('capital_fgts_balance');
 
       if (Array.isArray(savedTransactions) && savedTransactions.length > 0) {
         dispatch({ type: 'SET_TRANSACTIONS', payload: savedTransactions });
@@ -272,6 +273,10 @@ export function FinancialProvider({ children }: FinancialProviderProps) {
 
       if (Array.isArray(savedCategories) && savedCategories.length > 0) {
         dispatch({ type: 'SET_CATEGORIES', payload: savedCategories });
+      }
+
+      if (typeof savedFGTS === 'number' && savedFGTS > 0) {
+        dispatch({ type: 'SET_FGTS_BALANCE', payload: savedFGTS });
       }
     } catch (error) {
       console.warn('Erro ao carregar dados do localStorage:', error);
