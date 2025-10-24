@@ -56,7 +56,7 @@ class LocalStorageService {
   }
 
   private generateId(): string {
-    return uuidv4();
+    return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   }
 
   // Transactions
