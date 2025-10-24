@@ -170,6 +170,9 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
           isInstallment: false,
           installments: 1,
           installmentDescription: '',
+          isPassiveIncome: false,
+          incomeFrequency: 'mensal',
+          incomeAmountType: 'R$',
         });
       }
 
