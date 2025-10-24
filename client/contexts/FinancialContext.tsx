@@ -230,6 +230,27 @@ export function FinancialProvider({ children }: FinancialProviderProps) {
     }
   }, [isAuthenticated, user]);
 
+  // Função para carregar saldo FGTS
+  const loadFGTSBalance = async () => {
+    if (!isAuthenticated) {
+      return;
+    }
+
+    try {
+      const balance = await apiService.getFGTSBalance();
+      dispatch({ type: 'SET_FGTS_BALANCE', payload: balance });
+    } catch (error) {
+      console.error('Erro ao carregar saldo FGTS:', error);
+    }
+  };
+
+  // Carregar FGTS quando autenticado
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      loadFGTSBalance();
+    }
+  }, [isAuthenticated, user]);
+
   const addTransaction = async (transactionData: Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'>) => {
     if (!isAuthenticated) {
       dispatch({ type: 'SET_ERROR', payload: 'Usuário não autenticado' });
