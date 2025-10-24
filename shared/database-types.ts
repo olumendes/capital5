@@ -49,6 +49,9 @@ export interface DBTransaction {
   source: 'manual' | 'open-finance' | 'importacao';
   source_details?: string; // JSON
   tags?: string; // JSON array
+  is_passive_income?: boolean; // Para receitas passivas
+  income_frequency?: 'diario' | 'semanal' | 'mensal' | 'anual' | 'unico'; // Frequência da renda
+  income_amount_type?: 'R$' | '%'; // Tipo de valor (fixo em R$ ou percentual)
   created_at: string;
   updated_at: string;
 }
