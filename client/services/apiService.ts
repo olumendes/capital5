@@ -204,8 +204,30 @@ class ApiService {
 
   // ========== TRANSAÇÕES ==========
   async getTransactions(filters?: TransactionFilters) {
+    if (this.isTestMode()) {
+      let transactions = await localStorageService.getTransactions();
+
+      // Apply filters if provided
+      if (filters) {
+        if (filters.type) {
+          transactions = transactions.filter(t => t.type === filters.type);
+        }
+        if (filters.category_id) {
+          transactions = transactions.filter(t => t.category_id === filters.category_id);
+        }
+        if (filters.start_date) {
+          transactions = transactions.filter(t => new Date(t.date) >= new Date(filters.start_date!));
+        }
+        if (filters.end_date) {
+          transactions = transactions.filter(t => new Date(t.date) <= new Date(filters.end_date!));
+        }
+      }
+
+      return transactions;
+    }
+
     let endpoint = '/api/transactions';
-    
+
     if (filters) {
       const params = new URLSearchParams();
       Object.entries(filters).forEach(([key, value]) => {
@@ -213,7 +235,7 @@ class ApiService {
           params.append(key, value.toString());
         }
       });
-      
+
       if (params.toString()) {
         endpoint += `?${params.toString()}`;
       }
@@ -224,6 +246,14 @@ class ApiService {
   }
 
   async createTransaction(transaction: CreateTransactionRequest) {
+    if (this.isTestMode()) {
+      return localStorageService.createTransaction({
+        ...transaction,
+        user_id: 'test-user-001',
+        source: 'manual',
+      });
+    }
+
     const response = await this.request('/api/transactions', {
       method: 'POST',
       body: JSON.stringify(transaction),
@@ -232,6 +262,10 @@ class ApiService {
   }
 
   async updateTransaction(transaction: UpdateTransactionRequest) {
+    if (this.isTestMode()) {
+      return localStorageService.updateTransaction(transaction.id, transaction);
+    }
+
     const response = await this.request(`/api/transactions/${transaction.id}`, {
       method: 'PUT',
       body: JSON.stringify(transaction),
@@ -240,6 +274,10 @@ class ApiService {
   }
 
   async deleteTransaction(transactionId: string) {
+    if (this.isTestMode()) {
+      return localStorageService.deleteTransaction(transactionId);
+    }
+
     await this.request(`/api/transactions/${transactionId}`, {
       method: 'DELETE',
     });
