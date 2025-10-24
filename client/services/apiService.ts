@@ -171,11 +171,21 @@ class ApiService {
 
   // ========== CATEGORIAS ==========
   async getCategories() {
+    if (this.isTestMode()) {
+      return localStorageService.getCategories();
+    }
     const response = await this.request('/api/categories');
     return response.data;
   }
 
   async createCategory(category: any) {
+    if (this.isTestMode()) {
+      return localStorageService.createCategory({
+        ...category,
+        user_id: 'test-user-001',
+        is_default: false,
+      });
+    }
     const response = await this.request('/api/categories', {
       method: 'POST',
       body: JSON.stringify(category),
@@ -184,6 +194,9 @@ class ApiService {
   }
 
   async deleteCategory(categoryId: string) {
+    if (this.isTestMode()) {
+      return localStorageService.deleteCategory(categoryId);
+    }
     await this.request(`/api/categories/${categoryId}`, {
       method: 'DELETE',
     });
