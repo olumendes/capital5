@@ -140,7 +140,7 @@ function financialReducer(state: FinancialState, action: FinancialAction): Finan
 
     case 'SET_TRANSACTIONS':
       newState = { ...state, transactions: action.payload };
-      newState = { ...newState, summary: calculateSummary(action.payload, state.categories) };
+      newState = { ...newState, summary: calculateSummary(action.payload, state.categories, state.fgtsBalance) };
       setObjectCookie('capital_transactions', action.payload);
       return newState;
 
@@ -149,7 +149,7 @@ function financialReducer(state: FinancialState, action: FinancialAction): Finan
       newState = {
         ...state,
         transactions: updatedTransactions,
-        summary: calculateSummary(updatedTransactions, state.categories)
+        summary: calculateSummary(updatedTransactions, state.categories, state.fgtsBalance)
       };
       setObjectCookie('capital_transactions', updatedTransactions);
       return newState;
@@ -161,7 +161,7 @@ function financialReducer(state: FinancialState, action: FinancialAction): Finan
       newState = {
         ...state,
         transactions: updatedList,
-        summary: calculateSummary(updatedList, state.categories)
+        summary: calculateSummary(updatedList, state.categories, state.fgtsBalance)
       };
       setObjectCookie('capital_transactions', updatedList);
       return newState;
@@ -171,7 +171,7 @@ function financialReducer(state: FinancialState, action: FinancialAction): Finan
       newState = {
         ...state,
         transactions: filteredTransactions,
-        summary: calculateSummary(filteredTransactions, state.categories)
+        summary: calculateSummary(filteredTransactions, state.categories, state.fgtsBalance)
       };
       setObjectCookie('capital_transactions', filteredTransactions);
       return newState;
