@@ -201,6 +201,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const logout = () => {
     apiService.logout();
+    sessionStorage.removeItem('testMode');
     setState({
       user: null,
       isLoading: false,
