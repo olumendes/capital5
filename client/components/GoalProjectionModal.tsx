@@ -33,13 +33,28 @@ interface ProjectionResult {
 }
 
 export default function GoalProjectionModal({ goal, children, open, onOpenChange }: GoalProjectionModalProps) {
-  const { summary: financialSummary } = useFinancial();
+  const { summary: financialSummary, fgtsBalance } = useFinancial();
   const { summary: budgetSummary, getCurrentMonthExpenses, getCategoriesStatus } = useBudget();
-  
+
   const [monthlyIncome, setMonthlyIncome] = useState(financialSummary.totalReceitas.toString());
   const [expenseType, setExpenseType] = useState<'budget' | 'actual'>('actual');
   const [result, setResult] = useState<ProjectionResult | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState<Date>(new Date());
+  const [useFGTS, setUseFGTS] = useState(false);
+
+  // Generate month options (last 12 months and next 12 months)
+  const generateMonthOptions = () => {
+    const options = [];
+    const today = new Date();
+    for (let i = -12; i <= 12; i++) {
+      const date = addMonths(today, i);
+      options.push(date);
+    }
+    return options;
+  };
+
+  const monthOptions = generateMonthOptions();
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('pt-BR', {
