@@ -33,6 +33,10 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
     isInstallment: false,
     installments: 1,
     installmentDescription: '',
+    isYieldingIncome: false,
+    yieldFrequency: 'mensal' as RecurringFrequency,
+    yieldType: 'percentual' as RecurringType,
+    yieldAmount: '',
   });
   
   const [errors, setErrors] = useState<Record<string, string>>({});
