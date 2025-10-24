@@ -58,6 +58,9 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
         isInstallment: false,
         installments: 1,
         installmentDescription: '',
+        isPassiveIncome: (transactionToEdit as any).isPassiveIncome || false,
+        incomeFrequency: (transactionToEdit as any).incomeFrequency || 'mensal',
+        incomeAmountType: (transactionToEdit as any).incomeAmountType || 'R$',
       });
     }
   }, [transactionToEdit]);
