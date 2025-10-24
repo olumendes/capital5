@@ -202,7 +202,15 @@ function financialReducer(state: FinancialState, action: FinancialAction): Finan
     case 'UPDATE_SUMMARY':
       return {
         ...state,
-        summary: calculateSummary(state.transactions, state.categories)
+        summary: calculateSummary(state.transactions, state.categories, state.fgtsBalance)
+      };
+
+    case 'SET_FGTS_BALANCE':
+      const withFGTS = { ...state, fgtsBalance: action.payload };
+      setObjectCookie('capital_fgts_balance', action.payload);
+      return {
+        ...withFGTS,
+        summary: calculateSummary(state.transactions, state.categories, action.payload)
       };
 
     default:
