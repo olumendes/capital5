@@ -285,8 +285,12 @@ class ApiService {
 
   // ========== INVESTIMENTOS ==========
   async getInvestments(filters?: any) {
+    if (this.isTestMode()) {
+      return localStorageService.getInvestments();
+    }
+
     let endpoint = '/api/investments';
-    
+
     if (filters) {
       const params = new URLSearchParams();
       Object.entries(filters).forEach(([key, value]) => {
@@ -294,7 +298,7 @@ class ApiService {
           params.append(key, value.toString());
         }
       });
-      
+
       if (params.toString()) {
         endpoint += `?${params.toString()}`;
       }
@@ -305,6 +309,13 @@ class ApiService {
   }
 
   async createInvestment(investment: CreateInvestmentRequest) {
+    if (this.isTestMode()) {
+      return localStorageService.createInvestment({
+        ...investment,
+        user_id: 'test-user-001',
+      });
+    }
+
     const response = await this.request('/api/investments', {
       method: 'POST',
       body: JSON.stringify(investment),
@@ -313,6 +324,10 @@ class ApiService {
   }
 
   async updateInvestment(investment: UpdateInvestmentRequest) {
+    if (this.isTestMode()) {
+      return localStorageService.updateInvestment(investment.id, investment);
+    }
+
     const response = await this.request(`/api/investments/${investment.id}`, {
       method: 'PUT',
       body: JSON.stringify(investment),
@@ -321,6 +336,10 @@ class ApiService {
   }
 
   async deleteInvestment(investmentId: string) {
+    if (this.isTestMode()) {
+      return localStorageService.deleteInvestment(investmentId);
+    }
+
     await this.request(`/api/investments/${investmentId}`, {
       method: 'DELETE',
     });
