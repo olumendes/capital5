@@ -223,6 +223,21 @@ export default function AuthScreen() {
                 </form>
               </TabsContent>
             </Tabs>
+
+            {/* Test/Demo Button */}
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full text-gray-600"
+                onClick={testLogin}
+              >
+                🧪 Testar sem login
+              </Button>
+              <p className="text-xs text-gray-500 text-center mt-2">
+                Acesse a versão de teste com dados locais
+              </p>
+            </div>
           </CardContent>
         </Card>
 
