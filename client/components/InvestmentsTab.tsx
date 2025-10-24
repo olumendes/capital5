@@ -1,16 +1,17 @@
 import { useState } from 'react';
 import { useInvestments } from '../contexts/InvestmentContext';
 import { getInvestmentOption } from '@shared/investment-types';
+import { useCoinMarketCap } from '../hooks/useCoinMarketCap';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Progress } from './ui/progress';
 import InvestmentForm from './InvestmentForm';
-import { 
-  PlusCircle, 
-  RefreshCw, 
-  TrendingUp, 
-  TrendingDown, 
+import {
+  PlusCircle,
+  RefreshCw,
+  TrendingUp,
+  TrendingDown,
   Wallet,
   MoreVertical,
   Trash2,
