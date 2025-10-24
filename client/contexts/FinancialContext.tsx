@@ -43,12 +43,14 @@ const initialState: FinancialState = {
     totalReceitas: 0,
     totalDespesas: 0,
     saldoAtual: 0,
+    fgtsBalance: 0,
     variacaoMensal: 0,
     maioresGastos: [],
   },
   filters: {},
   isLoading: false,
   error: null,
+  fgtsBalance: 0,
 };
 
 function calculateSummary(transactions: Transaction[], categories: Category[]): FinancialSummary {
