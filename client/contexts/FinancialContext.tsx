@@ -173,11 +173,14 @@ function financialReducer(state: FinancialState, action: FinancialAction): Finan
       return { ...state, filters: action.payload };
     
     case 'UPDATE_SUMMARY':
-      return { 
-        ...state, 
+      return {
+        ...state,
         summary: calculateSummary(state.transactions, state.categories)
       };
-    
+
+    case 'SET_FGTS_BALANCE':
+      return { ...state, fgtsBalance: action.payload };
+
     default:
       return state;
   }
