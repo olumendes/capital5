@@ -228,6 +228,7 @@ interface FinancialContextType extends FinancialState {
   getFilteredTransactions: () => Transaction[];
   loadTransactions: () => Promise<void>;
   saveTransactions: () => Promise<void>;
+  setFGTSBalance: (amount: number) => void;
 }
 
 const FinancialContext = createContext<FinancialContextType | undefined>(undefined);
