@@ -22,15 +22,17 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 export default function InvestmentsTab() {
-  const { 
-    investments, 
-    summary, 
-    updateQuotes, 
-    isUpdatingQuotes, 
+  const {
+    investments,
+    summary,
+    updateQuotes,
+    isUpdatingQuotes,
     deleteInvestment,
-    lastQuoteUpdate 
+    lastQuoteUpdate
   } = useInvestments();
-  
+
+  const { data: btcPrice, loading: loadingBTC, error: btcError, refresh: refreshBTC } = useCoinMarketCap('BTC');
+
   const [showAddForm, setShowAddForm] = useState(false);
 
   const formatCurrency = (value: number) => {
