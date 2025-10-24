@@ -564,6 +564,10 @@ export function FinancialProvider({ children }: FinancialProviderProps) {
     return Promise.resolve();
   };
 
+  const setFGTSBalance = (amount: number) => {
+    dispatch({ type: 'SET_FGTS_BALANCE', payload: amount });
+  };
+
   const contextValue: FinancialContextType = {
     ...state,
     addTransaction,
@@ -575,6 +579,7 @@ export function FinancialProvider({ children }: FinancialProviderProps) {
     getFilteredTransactions,
     loadTransactions,
     saveTransactions,
+    setFGTSBalance,
   };
 
   return (
