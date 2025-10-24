@@ -59,6 +59,10 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
         isInstallment: false,
         installments: 1,
         installmentDescription: '',
+        isYieldingIncome: transactionToEdit.isYieldingIncome || false,
+        yieldFrequency: transactionToEdit.yieldFrequency || 'mensal',
+        yieldType: transactionToEdit.yieldType || 'percentual',
+        yieldAmount: transactionToEdit.yieldAmount?.toString() || '',
       });
     }
   }, [transactionToEdit]);
