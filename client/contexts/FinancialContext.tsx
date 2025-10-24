@@ -47,6 +47,7 @@ const initialState: FinancialState = {
   filters: {},
   isLoading: false,
   error: null,
+  fgtsBalance: 0,
 };
 
 function calculateSummary(transactions: Transaction[], categories: Category[]): FinancialSummary {
