@@ -10,6 +10,7 @@ import {
 import { DBTransaction, DBCategory } from '@shared/database-types';
 import apiService from '../services/apiService';
 import { useAuth } from './AuthContext';
+import { setObjectCookie, getObjectCookie } from '../utils/cookies';
 
 interface FinancialState {
   transactions: Transaction[];
