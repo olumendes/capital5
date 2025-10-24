@@ -546,6 +546,8 @@ export function FinancialProvider({ children }: FinancialProviderProps) {
     getFilteredTransactions,
     loadTransactions,
     saveTransactions,
+    getFGTSBalance,
+    updateFGTSBalance,
   };
 
   return (
