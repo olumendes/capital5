@@ -1,5 +1,4 @@
 import { DBTransaction, DBCategory, DBInvestment, DBGoal, DBBudgetDivision } from '@shared/database-types';
-import { v4 as uuidv4 } from 'crypto';
 
 interface TestModeData {
   transactions: DBTransaction[];
