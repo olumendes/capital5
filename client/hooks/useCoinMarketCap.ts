@@ -12,6 +12,8 @@ export interface CryptoPriceData {
 
 const API_KEY = '94d4a907464a4b79ba039952eff85bb5';
 const BASE_URL = 'https://pro-api.coinmarketcap.com/v1';
+// Fallback CORS proxy for development/testing
+const CORS_PROXY = 'https://cors-anywhere.herokuapp.com/';
 
 export function useCoinMarketCap(symbol: string = 'BTC') {
   const [data, setData] = useState<CryptoPriceData | null>(null);
@@ -25,18 +27,34 @@ export function useCoinMarketCap(symbol: string = 'BTC') {
     setError(null);
 
     try {
-      const response = await fetch(
-        `${BASE_URL}/cryptocurrency/quotes/latest?symbol=${symbol}&convert=BRL,USD`,
-        {
+      const url = `${BASE_URL}/cryptocurrency/quotes/latest?symbol=${symbol}&convert=BRL,USD`;
+
+      // Try direct fetch first
+      let response: Response | null = null;
+      try {
+        response = await fetch(url, {
           headers: {
             'X-CMC_PRO_API_KEY': API_KEY,
             'Accepts': 'application/json',
           },
+        });
+      } catch (directError) {
+        // If direct fetch fails (CORS), try with CORS proxy
+        console.warn('Direct fetch failed, trying CORS proxy...');
+        try {
+          response = await fetch(CORS_PROXY + url, {
+            headers: {
+              'X-CMC_PRO_API_KEY': API_KEY,
+              'Accepts': 'application/json',
+            },
+          });
+        } catch (proxyError) {
+          throw new Error('Não foi possível conectar à API de preços. Tente novamente mais tarde.');
         }
-      );
+      }
 
-      if (!response.ok) {
-        throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      if (!response || !response.ok) {
+        throw new Error(`API Error: ${response?.status || 'Unknown'} ${response?.statusText || ''}`);
       }
 
       const result = await response.json();
@@ -59,9 +77,10 @@ export function useCoinMarketCap(symbol: string = 'BTC') {
       });
       setError(null);
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Erro ao buscar preço';
+      const message = err instanceof Error ? err.message : 'Erro ao buscar preço do Bitcoin';
       setError(message);
       console.error('CoinMarketCap API Error:', err);
+      // Silently fail - this is a non-critical feature
     } finally {
       setLoading(false);
     }
