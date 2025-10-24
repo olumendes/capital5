@@ -211,7 +211,7 @@ export function FinancialProvider({ children }: FinancialProviderProps) {
   const [state, dispatch] = useReducer(financialReducer, initialState);
   const { isAuthenticated, user } = useAuth();
 
-  // Carregar dados da API quando autenticado
+  // Carregar dados da API quando autenticado; fallback para localStorage
   useEffect(() => {
     if (isAuthenticated && user) {
       loadTransactions();
@@ -221,6 +221,24 @@ export function FinancialProvider({ children }: FinancialProviderProps) {
       dispatch({ type: 'SET_CATEGORIES', payload: DEFAULT_CATEGORIES });
     }
   }, [isAuthenticated, user]);
+
+  // Carregar dados do localStorage na inicialização
+  useEffect(() => {
+    try {
+      const savedTransactions = getObjectCookie<Transaction[]>('capital_transactions');
+      const savedCategories = getObjectCookie<Category[]>('capital_categories');
+
+      if (Array.isArray(savedTransactions) && savedTransactions.length > 0) {
+        dispatch({ type: 'SET_TRANSACTIONS', payload: savedTransactions });
+      }
+
+      if (Array.isArray(savedCategories) && savedCategories.length > 0) {
+        dispatch({ type: 'SET_CATEGORIES', payload: savedCategories });
+      }
+    } catch (error) {
+      console.warn('Erro ao carregar dados do localStorage:', error);
+    }
+  }, []);
 
   const addTransaction = async (transactionData: Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'>) => {
     if (!isAuthenticated) {
