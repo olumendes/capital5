@@ -279,8 +279,16 @@ export function FinancialProvider({ children }: FinancialProviderProps) {
       dispatch({ type: 'ADD_TRANSACTION', payload: transaction });
       dispatch({ type: 'SET_ERROR', payload: null });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Erro ao adicionar transação';
-      dispatch({ type: 'SET_ERROR', payload: message });
+      // Fallback: salvar localmente se a API falhar
+      console.warn('Falha ao salvar na API, salvando localmente:', error);
+      const local: Transaction = {
+        ...transactionData,
+        id: crypto.randomUUID(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      dispatch({ type: 'ADD_TRANSACTION', payload: local });
+      dispatch({ type: 'SET_ERROR', payload: null });
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
