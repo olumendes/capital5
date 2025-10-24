@@ -88,13 +88,25 @@ class ApiService {
       const response = await fetch(url, config);
       const contentType = response.headers.get('content-type') || '';
       const isJson = contentType.includes('application/json');
-      const body = isJson ? await response.json() : await response.text();
+
+      let body: any;
+      try {
+        body = isJson ? await response.json() : await response.text();
+      } catch (parseError) {
+        // If body parsing fails, treat as empty
+        body = isJson ? {} : '';
+      }
 
       if (!response.ok) {
         // Extrair mensagem amigável do corpo
-        const message = isJson
-          ? (body.error || body.message || `HTTP ${response.status}`)
-          : (typeof body === 'string' && body.trim().length ? body : `HTTP ${response.status}`);
+        let message: string;
+        if (isJson && typeof body === 'object') {
+          message = body?.error || body?.message || `HTTP ${response.status}`;
+        } else if (typeof body === 'string' && body.trim().length) {
+          message = body;
+        } else {
+          message = `HTTP ${response.status}`;
+        }
         throw new Error(message);
       }
 
