@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Wallet, Loader2, AlertCircle } from 'lucide-react';
 
 export default function AuthScreen() {
-  const { login, register, error, isLoading, clearError } = useAuth();
+  const { login, register, error, isLoading, clearError, testLogin } = useAuth();
   const [activeTab, setActiveTab] = useState('login');
   
   const [loginForm, setLoginForm] = useState({
