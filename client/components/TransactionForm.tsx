@@ -141,7 +141,10 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
               date: installmentDate.toISOString().split('T')[0],
               source: 'manual',
               tags: [...formData.tags, 'parcelamento'],
-            });
+              isPassiveIncome: formData.type === 'receita' ? formData.isPassiveIncome : undefined,
+              incomeFrequency: formData.type === 'receita' ? formData.incomeFrequency : undefined,
+              incomeAmountType: formData.type === 'receita' ? formData.incomeAmountType : undefined,
+            } as any);
           }
         } else {
           // Criar transação única
@@ -154,6 +157,9 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
             date: formData.date.toISOString().split('T')[0],
             source: 'manual',
             tags: formData.tags,
+            isPassiveIncome: formData.type === 'receita' ? formData.isPassiveIncome : undefined,
+            incomeFrequency: formData.type === 'receita' ? formData.incomeFrequency : undefined,
+            incomeAmountType: formData.type === 'receita' ? formData.incomeAmountType : undefined,
           });
         }
       }
