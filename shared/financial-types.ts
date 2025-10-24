@@ -28,6 +28,9 @@ export interface Transaction {
     fileName?: string; // Para importações de arquivo
   };
   tags?: string[];
+  isPassiveIncome?: boolean; // Se é uma receita passiva/recorrente
+  incomeFrequency?: 'diario' | 'semanal' | 'mensal' | 'anual' | 'unico'; // Frequência da renda
+  incomeAmountType?: 'R$' | '%'; // Tipo de valor (fixo em R$ ou percentual)
   createdAt: string;
   updatedAt: string;
 }
