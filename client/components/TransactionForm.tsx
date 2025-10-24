@@ -471,6 +471,67 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
             />
           </div>
 
+          {/* Opções de Receita Passiva (apenas para receitas) */}
+          {formData.type === 'receita' && !isEditing && (
+            <div className="space-y-4 border rounded-lg p-4 bg-green-50">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="isPassiveIncome"
+                  checked={formData.isPassiveIncome}
+                  onCheckedChange={(checked) => {
+                    setFormData(prev => ({
+                      ...prev,
+                      isPassiveIncome: !!checked,
+                    }));
+                  }}
+                />
+                <Label htmlFor="isPassiveIncome" className="flex items-center gap-2 font-medium">
+                  💹 Receita Passiva/Recorrente
+                </Label>
+              </div>
+
+              {formData.isPassiveIncome && (
+                <div className="space-y-3 ml-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <Label htmlFor="incomeFrequency">Frequência</Label>
+                      <Select value={formData.incomeFrequency} onValueChange={(value: any) => setFormData(prev => ({ ...prev, incomeFrequency: value }))}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="diario">Diário</SelectItem>
+                          <SelectItem value="semanal">Semanal</SelectItem>
+                          <SelectItem value="mensal">Mensal</SelectItem>
+                          <SelectItem value="anual">Anual</SelectItem>
+                          <SelectItem value="unico">Único</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="incomeAmountType">Tipo de Valor</Label>
+                      <Select value={formData.incomeAmountType} onValueChange={(value: any) => setFormData(prev => ({ ...prev, incomeAmountType: value }))}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="R$">Valor Fixo (R$)</SelectItem>
+                          <SelectItem value="%">Percentual (%)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <p className="text-sm text-blue-800">
+                      💡 <strong>Receita Recorrente:</strong> Use para rendas que se repetem, como dividendos, aluguel, renda de investimentos, freelance recorrente, etc.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Tags */}
           <div className="space-y-2">
             <Label>Tags (opcional)</Label>
