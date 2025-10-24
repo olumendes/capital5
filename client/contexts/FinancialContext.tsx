@@ -19,9 +19,10 @@ interface FinancialState {
   filters: FilterOptions;
   isLoading: boolean;
   error: string | null;
+  fgtsBalance: number;
 }
 
-type FinancialAction = 
+type FinancialAction =
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null }
   | { type: 'SET_TRANSACTIONS'; payload: Transaction[] }
@@ -32,7 +33,8 @@ type FinancialAction =
   | { type: 'ADD_CATEGORY'; payload: Category }
   | { type: 'DELETE_CATEGORY'; payload: string }
   | { type: 'SET_FILTERS'; payload: FilterOptions }
-  | { type: 'UPDATE_SUMMARY' };
+  | { type: 'UPDATE_SUMMARY' }
+  | { type: 'SET_FGTS_BALANCE'; payload: number };
 
 const initialState: FinancialState = {
   transactions: [],
