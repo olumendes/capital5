@@ -83,7 +83,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     const checkAuth = async () => {
       // Verificar modo de teste
-      if (isTestMode()) {
+      const testModeActive = isTestMode();
+      if (testModeActive) {
+        console.log('[TEST MODE] Autenticando usuário de teste');
         const testUser = createTestUser();
         setState({
           user: testUser,
