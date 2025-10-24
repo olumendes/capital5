@@ -674,7 +674,7 @@ export default function CapitalDashboard() {
                     <div className="text-center py-8 text-gray-500">
                       <CreditCard className="h-12 w-12 mx-auto mb-4 text-gray-300" />
                       <p>Nenhuma transação encontrada</p>
-                      <p className="text-sm">Adicione sua primeira transa��ão para começar</p>
+                      <p className="text-sm">Adicione sua primeira transação para começar</p>
                     </div>
                   )}
                 </CardContent>
@@ -1375,7 +1375,7 @@ export default function CapitalDashboard() {
                   <div>
                     <p className="text-sm text-gray-600 mb-2">Saldo FGTS Atual</p>
                     <p className="text-3xl font-bold text-blue-600">
-                      {formatCurrency(summary.fgtsBalance)}
+                      {formatCurrency(fgtsBalance)}
                     </p>
                   </div>
                   <div className="space-y-2">
@@ -1387,26 +1387,23 @@ export default function CapitalDashboard() {
                         placeholder="Novo valor"
                         step="0.01"
                         min="0"
-                        defaultValue={summary.fgtsBalance}
+                        value={fgtsInputValue}
+                        onChange={(e) => setFgtsInputValue(e.target.value)}
                         className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         onKeyPress={(e) => {
                           if (e.key === 'Enter') {
-                            const value = parseFloat((e.target as HTMLInputElement).value);
+                            const value = parseFloat(fgtsInputValue);
                             if (!isNaN(value) && value >= 0) {
-                              const { setFGTSBalance } = require('../contexts/FinancialContext').useFinancial();
-                              // We need to access the function through a different approach
+                              setFGTSBalance(value);
                             }
                           }
                         }}
                       />
                       <Button
                         onClick={() => {
-                          const input = document.getElementById('fgts-input') as HTMLInputElement;
-                          if (input) {
-                            const value = parseFloat(input.value);
-                            if (!isNaN(value) && value >= 0) {
-                              // This will be called via the financial context
-                            }
+                          const value = parseFloat(fgtsInputValue);
+                          if (!isNaN(value) && value >= 0) {
+                            setFGTSBalance(value);
                           }
                         }}
                       >
