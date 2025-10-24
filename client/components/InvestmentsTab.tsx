@@ -93,14 +93,14 @@ export default function InvestmentsTab() {
             <CardTitle className="text-lg">{formatCurrency(summary.totalInvested)}</CardTitle>
           </CardHeader>
         </Card>
-        
+
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Valor Atual</CardDescription>
             <CardTitle className="text-lg">{formatCurrency(summary.currentValue)}</CardTitle>
           </CardHeader>
         </Card>
-        
+
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Lucro/Prejuízo</CardDescription>
@@ -109,7 +109,7 @@ export default function InvestmentsTab() {
             </CardTitle>
           </CardHeader>
         </Card>
-        
+
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Rentabilidade</CardDescription>
@@ -119,6 +119,62 @@ export default function InvestmentsTab() {
           </CardHeader>
         </Card>
       </div>
+
+      {/* Bitcoin Price Card from CoinMarketCap */}
+      {btcPrice && (
+        <Card className="bg-gradient-to-r from-orange-50 to-yellow-50 border-orange-200">
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-3xl">₿</span>
+                <div>
+                  <CardTitle className="text-lg">Bitcoin (BTC)</CardTitle>
+                  <CardDescription>Preço atual do mercado</CardDescription>
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={refreshBTC}
+                disabled={loadingBTC}
+              >
+                <RefreshCw className={`h-4 w-4 ${loadingBTC ? 'animate-spin' : ''}`} />
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <p className="text-xs text-gray-600">Em BRL</p>
+                <p className="text-lg font-bold">{formatCurrency(btcPrice.priceBRL)}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-600">Em USD</p>
+                <p className="text-lg font-bold">${btcPrice.priceUSD.toLocaleString('en-US', { maximumFractionDigits: 0 })}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-600">24h Change</p>
+                <Badge variant={btcPrice.change24h >= 0 ? 'default' : 'destructive'} className="text-sm">
+                  {btcPrice.change24h >= 0 ? '+' : ''}{btcPrice.change24h.toFixed(2)}%
+                </Badge>
+              </div>
+            </div>
+            <p className="text-xs text-gray-500">
+              Atualizado em {format(new Date(btcPrice.lastUpdated), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
+      {btcError && (
+        <Card className="border-red-200 bg-red-50">
+          <CardContent className="pt-6">
+            <p className="text-sm text-red-800">
+              ⚠️ Não foi possível carregar o preço do Bitcoin: {btcError}
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Last Update Info */}
       {lastQuoteUpdate && (
