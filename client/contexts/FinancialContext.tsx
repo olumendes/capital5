@@ -118,64 +118,82 @@ function calculateSummary(transactions: Transaction[], categories: Category[]): 
 }
 
 function financialReducer(state: FinancialState, action: FinancialAction): FinancialState {
+  let newState = state;
+
   switch (action.type) {
     case 'SET_LOADING':
       return { ...state, isLoading: action.payload };
-    
+
     case 'SET_ERROR':
       return { ...state, error: action.payload, isLoading: false };
-    
+
     case 'SET_TRANSACTIONS':
-      const newState = { ...state, transactions: action.payload };
-      return { ...newState, summary: calculateSummary(action.payload, state.categories) };
-    
+      newState = { ...state, transactions: action.payload };
+      newState = { ...newState, summary: calculateSummary(action.payload, state.categories) };
+      setObjectCookie('capital_transactions', action.payload);
+      return newState;
+
     case 'ADD_TRANSACTION':
       const updatedTransactions = [...state.transactions, action.payload];
-      return { 
-        ...state, 
+      newState = {
+        ...state,
         transactions: updatedTransactions,
         summary: calculateSummary(updatedTransactions, state.categories)
       };
-    
+      setObjectCookie('capital_transactions', updatedTransactions);
+      return newState;
+
     case 'UPDATE_TRANSACTION':
-      const updatedList = state.transactions.map(t => 
+      const updatedList = state.transactions.map(t =>
         t.id === action.payload.id ? action.payload : t
       );
-      return { 
-        ...state, 
+      newState = {
+        ...state,
         transactions: updatedList,
         summary: calculateSummary(updatedList, state.categories)
       };
-    
+      setObjectCookie('capital_transactions', updatedList);
+      return newState;
+
     case 'DELETE_TRANSACTION':
       const filteredTransactions = state.transactions.filter(t => t.id !== action.payload);
-      return { 
-        ...state, 
+      newState = {
+        ...state,
         transactions: filteredTransactions,
         summary: calculateSummary(filteredTransactions, state.categories)
       };
-    
+      setObjectCookie('capital_transactions', filteredTransactions);
+      return newState;
+
     case 'SET_CATEGORIES':
-      return { ...state, categories: action.payload };
-    
+      newState = { ...state, categories: action.payload };
+      setObjectCookie('capital_categories', action.payload);
+      return newState;
+
     case 'ADD_CATEGORY':
-      return { ...state, categories: [...state.categories, action.payload] };
+      const newCategories = [...state.categories, action.payload];
+      newState = { ...state, categories: newCategories };
+      setObjectCookie('capital_categories', newCategories);
+      return newState;
 
     case 'DELETE_CATEGORY':
-      return {
+      const filteredCategories = state.categories.filter(cat => cat.id !== action.payload);
+      newState = {
         ...state,
-        categories: state.categories.filter(cat => cat.id !== action.payload)
+        categories: filteredCategories
       };
+      setObjectCookie('capital_categories', filteredCategories);
+      return newState;
 
     case 'SET_FILTERS':
       return { ...state, filters: action.payload };
-    
+
     case 'UPDATE_SUMMARY':
-      return { 
-        ...state, 
+      return {
+        ...state,
         summary: calculateSummary(state.transactions, state.categories)
       };
-    
+
     default:
       return state;
   }
