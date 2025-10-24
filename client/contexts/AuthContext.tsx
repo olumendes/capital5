@@ -19,8 +19,34 @@ interface AuthContextType extends AuthState {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const isTestMode = () => {
-  const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
-  return params.get('testMode') === 'true' || (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_TEST_MODE === 'true');
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  // Verificar parâmetro de URL
+  const params = new URLSearchParams(window.location.search);
+  const urlTestMode = params.get('testMode') === 'true';
+
+  // Se encontrou na URL, salvar em sessionStorage
+  if (urlTestMode) {
+    sessionStorage.setItem('testMode', 'true');
+    return true;
+  }
+
+  // Verificar sessionStorage (persiste durante a sessão)
+  const sessionTestMode = sessionStorage.getItem('testMode') === 'true';
+  if (sessionTestMode) {
+    return true;
+  }
+
+  // Verificar variável de ambiente
+  const envTestMode = (import.meta as any).env?.VITE_TEST_MODE === 'true';
+  if (envTestMode) {
+    sessionStorage.setItem('testMode', 'true');
+    return true;
+  }
+
+  return false;
 };
 
 const createTestUser = (): User => {
