@@ -10,8 +10,9 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Separator } from './ui/separator';
+import { Checkbox } from './ui/checkbox';
 import { Calculator, TrendingUp, AlertTriangle, CheckCircle, Calendar, DollarSign } from 'lucide-react';
-import { format, differenceInMonths, addMonths } from 'date-fns';
+import { format, differenceInMonths, addMonths, getMonth, getYear } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 interface GoalProjectionModalProps {
