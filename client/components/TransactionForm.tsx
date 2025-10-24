@@ -1,17 +1,29 @@
-import { useState, useEffect } from 'react';
-import { useFinancial } from '../contexts/FinancialContext';
-import { TransactionType, Transaction } from '@shared/financial-types';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Textarea } from './ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { RadioGroup, RadioGroupItem } from './ui/radio-group';
-import { Badge } from './ui/badge';
-import { Checkbox } from './ui/checkbox';
-import CategoryModal from './CategoryModal';
-import { PlusCircle, DollarSign, CalendarDays } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { useFinancial } from "../contexts/FinancialContext";
+import { TransactionType, Transaction } from "@shared/financial-types";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import { Textarea } from "./ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
+import { Badge } from "./ui/badge";
+import { Checkbox } from "./ui/checkbox";
+import CategoryModal from "./CategoryModal";
+import { PlusCircle, DollarSign, CalendarDays } from "lucide-react";
 
 interface TransactionFormProps {
   onSuccess?: () => void;
@@ -20,27 +32,37 @@ interface TransactionFormProps {
   transactionToEdit?: Transaction | null;
 }
 
-export default function TransactionForm({ onSuccess, onCancel, initialType = 'despesa', transactionToEdit }: TransactionFormProps) {
+export default function TransactionForm({
+  onSuccess,
+  onCancel,
+  initialType = "despesa",
+  transactionToEdit,
+}: TransactionFormProps) {
   const { addTransaction, updateTransaction, categories } = useFinancial();
-  
+
   const [formData, setFormData] = useState({
     type: initialType,
-    category: '',
-    description: '',
-    amount: '',
+    category: "",
+    description: "",
+    amount: "",
     date: new Date(),
     tags: [] as string[],
     isInstallment: false,
     installments: 1,
-    installmentDescription: '',
+    installmentDescription: "",
     isPassiveIncome: false,
-    incomeFrequency: 'mensal' as 'diario' | 'semanal' | 'mensal' | 'anual' | 'unico',
-    incomeAmountType: 'R$' as 'R$' | '%',
+    incomeFrequency: "mensal" as
+      | "diario"
+      | "semanal"
+      | "mensal"
+      | "anual"
+      | "unico",
+    incomeAmountType: "R$" as "R$" | "%",
   });
-  
+
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [newTag, setNewTag] = useState('');
+  const [newTag, setNewTag] = useState("");
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
 
   const isEditing = !!transactionToEdit;
@@ -57,40 +79,42 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
         tags: transactionToEdit.tags || [],
         isInstallment: false,
         installments: 1,
-        installmentDescription: '',
+        installmentDescription: "",
         isPassiveIncome: (transactionToEdit as any).isPassiveIncome || false,
-        incomeFrequency: (transactionToEdit as any).incomeFrequency || 'mensal',
-        incomeAmountType: (transactionToEdit as any).incomeAmountType || 'R$',
+        incomeFrequency: (transactionToEdit as any).incomeFrequency || "mensal",
+        incomeAmountType: (transactionToEdit as any).incomeAmountType || "R$",
       });
     }
   }, [transactionToEdit]);
 
-  const availableCategories = categories.filter(cat => cat.type === formData.type);
+  const availableCategories = categories.filter(
+    (cat) => cat.type === formData.type,
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validação
     const newErrors: Record<string, string> = {};
-    
+
     if (!formData.description.trim()) {
-      newErrors.description = 'Descrição é obrigatória';
+      newErrors.description = "Descrição é obrigatória";
     }
-    
+
     if (!formData.amount || parseAmountValue(formData.amount) <= 0) {
-      newErrors.amount = 'Valor deve ser maior que zero';
+      newErrors.amount = "Valor deve ser maior que zero";
     }
-    
+
     if (!formData.category) {
-      newErrors.category = 'Categoria é obrigatória';
+      newErrors.category = "Categoria é obrigatória";
     }
 
     if (formData.isInstallment && formData.installments < 2) {
-      newErrors.installments = 'Número de parcelas deve ser maior que 1';
+      newErrors.installments = "Número de parcelas deve ser maior que 1";
     }
 
     if (formData.isInstallment && formData.installments > 60) {
-      newErrors.installments = 'Número máximo de parcelas é 60';
+      newErrors.installments = "Número máximo de parcelas é 60";
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -102,7 +126,9 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
     setErrors({});
 
     try {
-      const selectedCategory = categories.find(cat => cat.id === formData.category);
+      const selectedCategory = categories.find(
+        (cat) => cat.id === formData.category,
+      );
       const totalAmount = parseAmountValue(formData.amount);
 
       if (isEditing && transactionToEdit) {
@@ -114,7 +140,7 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
           categoryName: selectedCategory?.name,
           description: formData.description.trim(),
           amount: totalAmount,
-          date: formData.date.toISOString().split('T')[0],
+          date: formData.date.toISOString().split("T")[0],
           tags: formData.tags,
         });
       } else {
@@ -138,12 +164,21 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
               categoryName: selectedCategory?.name,
               description: installmentDescription,
               amount: installmentAmount,
-              date: installmentDate.toISOString().split('T')[0],
-              source: 'manual',
-              tags: [...formData.tags, 'parcelamento'],
-              isPassiveIncome: formData.type === 'receita' ? formData.isPassiveIncome : undefined,
-              incomeFrequency: formData.type === 'receita' ? formData.incomeFrequency : undefined,
-              incomeAmountType: formData.type === 'receita' ? formData.incomeAmountType : undefined,
+              date: installmentDate.toISOString().split("T")[0],
+              source: "manual",
+              tags: [...formData.tags, "parcelamento"],
+              isPassiveIncome:
+                formData.type === "receita"
+                  ? formData.isPassiveIncome
+                  : undefined,
+              incomeFrequency:
+                formData.type === "receita"
+                  ? formData.incomeFrequency
+                  : undefined,
+              incomeAmountType:
+                formData.type === "receita"
+                  ? formData.incomeAmountType
+                  : undefined,
             } as any);
           }
         } else {
@@ -154,12 +189,21 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
             categoryName: selectedCategory?.name,
             description: formData.description.trim(),
             amount: totalAmount,
-            date: formData.date.toISOString().split('T')[0],
-            source: 'manual',
+            date: formData.date.toISOString().split("T")[0],
+            source: "manual",
             tags: formData.tags,
-            isPassiveIncome: formData.type === 'receita' ? formData.isPassiveIncome : undefined,
-            incomeFrequency: formData.type === 'receita' ? formData.incomeFrequency : undefined,
-            incomeAmountType: formData.type === 'receita' ? formData.incomeAmountType : undefined,
+            isPassiveIncome:
+              formData.type === "receita"
+                ? formData.isPassiveIncome
+                : undefined,
+            incomeFrequency:
+              formData.type === "receita"
+                ? formData.incomeFrequency
+                : undefined,
+            incomeAmountType:
+              formData.type === "receita"
+                ? formData.incomeAmountType
+                : undefined,
           });
         }
       }
@@ -168,23 +212,23 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
       if (!isEditing) {
         setFormData({
           type: initialType,
-          category: '',
-          description: '',
-          amount: '',
+          category: "",
+          description: "",
+          amount: "",
           date: new Date(),
           tags: [],
           isInstallment: false,
           installments: 1,
-          installmentDescription: '',
+          installmentDescription: "",
           isPassiveIncome: false,
-          incomeFrequency: 'mensal',
-          incomeAmountType: 'R$',
+          incomeFrequency: "mensal",
+          incomeAmountType: "R$",
         });
       }
 
       onSuccess?.();
     } catch (error) {
-      setErrors({ submit: 'Erro ao salvar transação. Tente novamente.' });
+      setErrors({ submit: "Erro ao salvar transação. Tente novamente." });
     } finally {
       setIsSubmitting(false);
     }
@@ -192,29 +236,29 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
 
   const handleAddTag = () => {
     if (newTag.trim() && !formData.tags.includes(newTag.trim())) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        tags: [...prev.tags, newTag.trim()]
+        tags: [...prev.tags, newTag.trim()],
       }));
-      setNewTag('');
+      setNewTag("");
     }
   };
 
   const handleRemoveTag = (tagToRemove: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
+      tags: prev.tags.filter((tag) => tag !== tagToRemove),
     }));
   };
 
   const formatCurrencyInput = (value: string) => {
     // Remove caracteres não numéricos exceto vírgula e ponto
-    let numericValue = value.replace(/[^\d.,]/g, '');
+    let numericValue = value.replace(/[^\d.,]/g, "");
 
     // Permitir apenas uma vírgula ou ponto
     const parts = numericValue.split(/[.,]/);
     if (parts.length > 2) {
-      numericValue = parts[0] + ',' + parts[1];
+      numericValue = parts[0] + "," + parts[1];
     }
 
     return numericValue;
@@ -222,14 +266,14 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
 
   const parseAmountValue = (value: string): number => {
     // Converter vírgula para ponto para parseFloat
-    const normalizedValue = value.replace(',', '.');
+    const normalizedValue = value.replace(",", ".");
     return parseFloat(normalizedValue) || 0;
   };
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
     }).format(value);
   };
 
@@ -238,13 +282,12 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <PlusCircle className="h-5 w-5" />
-          {isEditing ? 'Editar Transação' : 'Nova Transação'}
+          {isEditing ? "Editar Transação" : "Nova Transação"}
         </CardTitle>
         <CardDescription>
           {isEditing
-            ? 'Modifique os dados da sua transação'
-            : 'Adicione uma nova receita ou despesa ao seu controle financeiro'
-          }
+            ? "Modifique os dados da sua transação"
+            : "Adicione uma nova receita ou despesa ao seu controle financeiro"}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -252,11 +295,11 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
           {/* Tipo da Transação */}
           <div className="space-y-2">
             <Label>Tipo da Transação</Label>
-            <RadioGroup 
-              value={formData.type} 
+            <RadioGroup
+              value={formData.type}
               onValueChange={(value: TransactionType) => {
-                setFormData(prev => ({ ...prev, type: value, category: '' }));
-                setErrors(prev => ({ ...prev, category: '' }));
+                setFormData((prev) => ({ ...prev, type: value, category: "" }));
+                setErrors((prev) => ({ ...prev, category: "" }));
               }}
               className="flex gap-6"
             >
@@ -278,18 +321,18 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
           {/* Categoria */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="category">
-                Categoria *
-              </Label>
+              <Label htmlFor="category">Categoria *</Label>
               <CategoryModal
                 open={categoryModalOpen}
                 onOpenChange={(open) => {
                   setCategoryModalOpen(open);
                   // Quando o modal fechar, verificar se a categoria selecionada ainda é válida
                   if (!open && formData.category) {
-                    const categoryExists = availableCategories.find(cat => cat.id === formData.category);
+                    const categoryExists = availableCategories.find(
+                      (cat) => cat.id === formData.category,
+                    );
                     if (!categoryExists) {
-                      setFormData(prev => ({ ...prev, category: '' }));
+                      setFormData((prev) => ({ ...prev, category: "" }));
                     }
                   }
                 }}
@@ -304,11 +347,13 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
               key={`category-select-${availableCategories.length}`}
               value={formData.category}
               onValueChange={(value) => {
-                setFormData(prev => ({ ...prev, category: value }));
-                setErrors(prev => ({ ...prev, category: '' }));
+                setFormData((prev) => ({ ...prev, category: value }));
+                setErrors((prev) => ({ ...prev, category: "" }));
               }}
             >
-              <SelectTrigger className={errors.category ? 'border-red-500' : ''}>
+              <SelectTrigger
+                className={errors.category ? "border-red-500" : ""}
+              >
                 <SelectValue placeholder="Selecione uma categoria" />
               </SelectTrigger>
               <SelectContent
@@ -335,18 +380,19 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
 
           {/* Descrição */}
           <div className="space-y-2">
-            <Label htmlFor="description">
-              Descrição *
-            </Label>
+            <Label htmlFor="description">Descrição *</Label>
             <Textarea
               id="description"
               placeholder="Ex: Almoço no restaurante, Salário do mês, etc."
               value={formData.description}
               onChange={(e) => {
-                setFormData(prev => ({ ...prev, description: e.target.value }));
-                setErrors(prev => ({ ...prev, description: '' }));
+                setFormData((prev) => ({
+                  ...prev,
+                  description: e.target.value,
+                }));
+                setErrors((prev) => ({ ...prev, description: "" }));
               }}
-              className={errors.description ? 'border-red-500' : ''}
+              className={errors.description ? "border-red-500" : ""}
               rows={3}
             />
             {errors.description && (
@@ -356,9 +402,7 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
 
           {/* Valor */}
           <div className="space-y-2">
-            <Label htmlFor="amount">
-              Valor (R$) *
-            </Label>
+            <Label htmlFor="amount">Valor (R$) *</Label>
             <div className="relative">
               <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input
@@ -368,10 +412,10 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
                 value={formData.amount}
                 onChange={(e) => {
                   const value = formatCurrencyInput(e.target.value);
-                  setFormData(prev => ({ ...prev, amount: value }));
-                  setErrors(prev => ({ ...prev, amount: '' }));
+                  setFormData((prev) => ({ ...prev, amount: value }));
+                  setErrors((prev) => ({ ...prev, amount: "" }));
                 }}
-                className={`pl-10 ${errors.amount ? 'border-red-500' : ''}`}
+                className={`pl-10 ${errors.amount ? "border-red-500" : ""}`}
               />
             </div>
             {errors.amount && (
@@ -387,15 +431,18 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
                   id="isInstallment"
                   checked={formData.isInstallment}
                   onCheckedChange={(checked) => {
-                    setFormData(prev => ({
+                    setFormData((prev) => ({
                       ...prev,
                       isInstallment: !!checked,
-                      installments: checked ? 2 : 1
+                      installments: checked ? 2 : 1,
                     }));
-                    setErrors(prev => ({ ...prev, installments: '' }));
+                    setErrors((prev) => ({ ...prev, installments: "" }));
                   }}
                 />
-                <Label htmlFor="isInstallment" className="flex items-center gap-2 font-medium">
+                <Label
+                  htmlFor="isInstallment"
+                  className="flex items-center gap-2 font-medium"
+                >
                   <CalendarDays className="h-4 w-4" />
                   Parcelar esta transação
                 </Label>
@@ -414,13 +461,18 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
                         value={formData.installments}
                         onChange={(e) => {
                           const value = parseInt(e.target.value) || 1;
-                          setFormData(prev => ({ ...prev, installments: value }));
-                          setErrors(prev => ({ ...prev, installments: '' }));
+                          setFormData((prev) => ({
+                            ...prev,
+                            installments: value,
+                          }));
+                          setErrors((prev) => ({ ...prev, installments: "" }));
                         }}
-                        className={errors.installments ? 'border-red-500' : ''}
+                        className={errors.installments ? "border-red-500" : ""}
                       />
                       {errors.installments && (
-                        <p className="text-sm text-red-500">{errors.installments}</p>
+                        <p className="text-sm text-red-500">
+                          {errors.installments}
+                        </p>
                       )}
                     </div>
 
@@ -428,31 +480,48 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
                       <Label>Valor por Parcela</Label>
                       <div className="bg-gray-100 px-3 py-2 rounded-md text-sm">
                         {formData.amount && formData.installments > 0
-                          ? formatCurrency(parseAmountValue(formData.amount) / formData.installments)
-                          : 'R$ 0,00'
-                        }
+                          ? formatCurrency(
+                              parseAmountValue(formData.amount) /
+                                formData.installments,
+                            )
+                          : "R$ 0,00"}
                       </div>
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="installmentDescription">Descrição do Parcelamento (opcional)</Label>
+                    <Label htmlFor="installmentDescription">
+                      Descrição do Parcelamento (opcional)
+                    </Label>
                     <Input
                       id="installmentDescription"
                       value={formData.installmentDescription}
-                      onChange={(e) => setFormData(prev => ({ ...prev, installmentDescription: e.target.value }))}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          installmentDescription: e.target.value,
+                        }))
+                      }
                       placeholder="Ex: Compra no cartão de crédito"
                     />
                     <p className="text-xs text-gray-500">
-                      Se não preenchido, será usado: "{formData.description.trim() || 'Nova transação'}"
+                      Se não preenchido, será usado: "
+                      {formData.description.trim() || "Nova transação"}"
                     </p>
                   </div>
 
                   <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                     <p className="text-sm text-yellow-800">
-                      💡 <strong>Como funciona:</strong> Serão criadas {formData.installments} transações de {
-                        formData.amount ? formatCurrency(parseAmountValue(formData.amount) / formData.installments) : 'R$ 0,00'
-                      } cada uma, distribuídas mensalmente a partir da data selecionada.
+                      💡 <strong>Como funciona:</strong> Serão criadas{" "}
+                      {formData.installments} transações de{" "}
+                      {formData.amount
+                        ? formatCurrency(
+                            parseAmountValue(formData.amount) /
+                              formData.installments,
+                          )
+                        : "R$ 0,00"}{" "}
+                      cada uma, distribuídas mensalmente a partir da data
+                      selecionada.
                     </p>
                   </div>
                 </div>
@@ -466,26 +535,34 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
             <Input
               id="date"
               type="date"
-              value={formData.date.toISOString().split('T')[0]}
-              onChange={(e) => setFormData(prev => ({ ...prev, date: new Date(e.target.value) }))}
+              value={formData.date.toISOString().split("T")[0]}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  date: new Date(e.target.value),
+                }))
+              }
             />
           </div>
 
           {/* Opções de Receita Passiva (apenas para receitas) */}
-          {formData.type === 'receita' && !isEditing && (
+          {formData.type === "receita" && !isEditing && (
             <div className="space-y-4 border rounded-lg p-4 bg-green-50">
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="isPassiveIncome"
                   checked={formData.isPassiveIncome}
                   onCheckedChange={(checked) => {
-                    setFormData(prev => ({
+                    setFormData((prev) => ({
                       ...prev,
                       isPassiveIncome: !!checked,
                     }));
                   }}
                 />
-                <Label htmlFor="isPassiveIncome" className="flex items-center gap-2 font-medium">
+                <Label
+                  htmlFor="isPassiveIncome"
+                  className="flex items-center gap-2 font-medium"
+                >
                   💹 Receita Passiva/Recorrente
                 </Label>
               </div>
@@ -495,7 +572,15 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="space-y-2">
                       <Label htmlFor="incomeFrequency">Frequência</Label>
-                      <Select value={formData.incomeFrequency} onValueChange={(value: any) => setFormData(prev => ({ ...prev, incomeFrequency: value }))}>
+                      <Select
+                        value={formData.incomeFrequency}
+                        onValueChange={(value: any) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            incomeFrequency: value,
+                          }))
+                        }
+                      >
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
@@ -511,7 +596,15 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
 
                     <div className="space-y-2">
                       <Label htmlFor="incomeAmountType">Tipo de Valor</Label>
-                      <Select value={formData.incomeAmountType} onValueChange={(value: any) => setFormData(prev => ({ ...prev, incomeAmountType: value }))}>
+                      <Select
+                        value={formData.incomeAmountType}
+                        onValueChange={(value: any) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            incomeAmountType: value,
+                          }))
+                        }
+                      >
                         <SelectTrigger>
                           <SelectValue />
                         </SelectTrigger>
@@ -524,7 +617,9 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
                   </div>
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                     <p className="text-sm text-blue-800">
-                      💡 <strong>Receita Recorrente:</strong> Use para rendas que se repetem, como dividendos, aluguel, renda de investimentos, freelance recorrente, etc.
+                      💡 <strong>Receita Recorrente:</strong> Use para rendas
+                      que se repetem, como dividendos, aluguel, renda de
+                      investimentos, freelance recorrente, etc.
                     </p>
                   </div>
                 </div>
@@ -541,7 +636,7 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
                 value={newTag}
                 onChange={(e) => setNewTag(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
+                  if (e.key === "Enter") {
                     e.preventDefault();
                     handleAddTag();
                   }
@@ -555,9 +650,9 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
             {formData.tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-2">
                 {formData.tags.map((tag, index) => (
-                  <Badge 
-                    key={index} 
-                    variant="secondary" 
+                  <Badge
+                    key={index}
+                    variant="secondary"
                     className="cursor-pointer"
                     onClick={() => handleRemoveTag(tag)}
                   >
@@ -578,19 +673,21 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
           {/* Botões */}
           <div className="flex gap-3 pt-4">
             {onCancel && (
-              <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onCancel}
+                className="flex-1"
+              >
                 Cancelar
               </Button>
             )}
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex-1"
-            >
+            <Button type="submit" disabled={isSubmitting} className="flex-1">
               {isSubmitting
-                ? 'Salvando...'
-                : isEditing ? 'Atualizar Transação' : 'Salvar Transação'
-              }
+                ? "Salvando..."
+                : isEditing
+                  ? "Atualizar Transação"
+                  : "Salvar Transação"}
             </Button>
           </div>
         </form>

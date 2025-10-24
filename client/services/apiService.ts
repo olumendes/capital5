@@ -15,29 +15,33 @@ import {
   UpdateBudgetDivisionRequest,
   CreateBudgetCategoryRequest,
   UpdateBudgetCategoryRequest,
-  TransactionFilters
-} from '@shared/database-types';
-import { localStorageService } from './localStorageService';
+  TransactionFilters,
+} from "@shared/database-types";
+import { localStorageService } from "./localStorageService";
 
 class ApiService {
   private baseUrl: string;
   private token: string | null = null;
 
   private isTestMode(): boolean {
-    if (typeof window === 'undefined') return false;
-    return sessionStorage.getItem('testMode') === 'true';
+    if (typeof window === "undefined") return false;
+    return sessionStorage.getItem("testMode") === "true";
   }
 
   constructor() {
     // Detectar base da API (permite override por env)
     // Ex.: defina VITE_API_BASE_URL para apontar para seu Worker/Netlify Functions
-    const envBase = (typeof import.meta !== 'undefined' && (import.meta as any).env && (import.meta as any).env.VITE_API_BASE_URL) || undefined;
-    if (envBase && typeof envBase === 'string' && envBase.trim().length > 0) {
-      this.baseUrl = envBase.replace(/\/$/, '');
-    } else if (typeof window !== 'undefined' && window.location?.origin) {
+    const envBase =
+      (typeof import.meta !== "undefined" &&
+        (import.meta as any).env &&
+        (import.meta as any).env.VITE_API_BASE_URL) ||
+      undefined;
+    if (envBase && typeof envBase === "string" && envBase.trim().length > 0) {
+      this.baseUrl = envBase.replace(/\/$/, "");
+    } else if (typeof window !== "undefined" && window.location?.origin) {
       this.baseUrl = window.location.origin;
     } else {
-      this.baseUrl = 'http://localhost:5173';
+      this.baseUrl = "http://localhost:5173";
     }
 
     // Carregar token do localStorage
@@ -45,32 +49,32 @@ class ApiService {
   }
 
   private loadToken() {
-    if (typeof window !== 'undefined') {
-      this.token = localStorage.getItem('auth-token');
+    if (typeof window !== "undefined") {
+      this.token = localStorage.getItem("auth-token");
     }
   }
 
   private saveToken(token: string) {
     this.token = token;
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('auth-token', token);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("auth-token", token);
     }
   }
 
   private clearToken() {
     this.token = null;
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('auth-token');
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("auth-token");
     }
   }
 
   private getHeaders(): Record<string, string> {
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     };
 
     if (this.token) {
-      headers['Authorization'] = `Bearer ${this.token}`;
+      headers["Authorization"] = `Bearer ${this.token}`;
     }
 
     return headers;
@@ -78,7 +82,7 @@ class ApiService {
 
   private async request<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseUrl}${endpoint}`;
 
@@ -92,15 +96,17 @@ class ApiService {
 
     try {
       const response = await fetch(url, config);
-      const contentType = response.headers.get('content-type') || '';
-      const isJson = contentType.includes('application/json');
+      const contentType = response.headers.get("content-type") || "";
+      const isJson = contentType.includes("application/json");
       const body = isJson ? await response.json() : await response.text();
 
       if (!response.ok) {
         // Extrair mensagem amigável do corpo
         const message = isJson
-          ? (body.error || body.message || `HTTP ${response.status}`)
-          : (typeof body === 'string' && body.trim().length ? body : `HTTP ${response.status}`);
+          ? body.error || body.message || `HTTP ${response.status}`
+          : typeof body === "string" && body.trim().length
+            ? body
+            : `HTTP ${response.status}`;
         throw new Error(message);
       }
 
@@ -111,15 +117,15 @@ class ApiService {
 
       return body as ApiResponse<T>;
     } catch (error) {
-      console.error('API Error:', error);
+      console.error("API Error:", error);
       throw error;
     }
   }
 
   // ========== AUTENTICAÇÃO ==========
   async register(userData: UserCreate): Promise<AuthResponse> {
-    const response = await this.request<AuthResponse>('/api/auth/register', {
-      method: 'POST',
+    const response = await this.request<AuthResponse>("/api/auth/register", {
+      method: "POST",
       body: JSON.stringify(userData),
     });
 
@@ -131,8 +137,8 @@ class ApiService {
   }
 
   async login(credentials: UserLogin): Promise<AuthResponse> {
-    const response = await this.request<AuthResponse>('/api/auth/login', {
-      method: 'POST',
+    const response = await this.request<AuthResponse>("/api/auth/login", {
+      method: "POST",
       body: JSON.stringify(credentials),
     });
 
@@ -149,8 +155,8 @@ class ApiService {
     }
 
     try {
-      const response = await this.request<AuthResponse>('/api/auth/verify', {
-        method: 'POST',
+      const response = await this.request<AuthResponse>("/api/auth/verify", {
+        method: "POST",
       });
 
       return response.data?.user || null;
@@ -174,7 +180,7 @@ class ApiService {
     if (this.isTestMode()) {
       return localStorageService.getCategories();
     }
-    const response = await this.request('/api/categories');
+    const response = await this.request("/api/categories");
     return response.data;
   }
 
@@ -182,12 +188,12 @@ class ApiService {
     if (this.isTestMode()) {
       return localStorageService.createCategory({
         ...category,
-        user_id: 'test-user-001',
+        user_id: "test-user-001",
         is_default: false,
       });
     }
-    const response = await this.request('/api/categories', {
-      method: 'POST',
+    const response = await this.request("/api/categories", {
+      method: "POST",
       body: JSON.stringify(category),
     });
     return response.data;
@@ -198,7 +204,7 @@ class ApiService {
       return localStorageService.deleteCategory(categoryId);
     }
     await this.request(`/api/categories/${categoryId}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
   }
 
@@ -210,23 +216,29 @@ class ApiService {
       // Apply filters if provided
       if (filters) {
         if (filters.type) {
-          transactions = transactions.filter(t => t.type === filters.type);
+          transactions = transactions.filter((t) => t.type === filters.type);
         }
         if (filters.category_id) {
-          transactions = transactions.filter(t => t.category_id === filters.category_id);
+          transactions = transactions.filter(
+            (t) => t.category_id === filters.category_id,
+          );
         }
         if (filters.start_date) {
-          transactions = transactions.filter(t => new Date(t.date) >= new Date(filters.start_date!));
+          transactions = transactions.filter(
+            (t) => new Date(t.date) >= new Date(filters.start_date!),
+          );
         }
         if (filters.end_date) {
-          transactions = transactions.filter(t => new Date(t.date) <= new Date(filters.end_date!));
+          transactions = transactions.filter(
+            (t) => new Date(t.date) <= new Date(filters.end_date!),
+          );
         }
       }
 
       return transactions;
     }
 
-    let endpoint = '/api/transactions';
+    let endpoint = "/api/transactions";
 
     if (filters) {
       const params = new URLSearchParams();
@@ -249,13 +261,13 @@ class ApiService {
     if (this.isTestMode()) {
       return localStorageService.createTransaction({
         ...transaction,
-        user_id: 'test-user-001',
-        source: 'manual',
+        user_id: "test-user-001",
+        source: "manual",
       });
     }
 
-    const response = await this.request('/api/transactions', {
-      method: 'POST',
+    const response = await this.request("/api/transactions", {
+      method: "POST",
       body: JSON.stringify(transaction),
     });
     return response.data;
@@ -267,7 +279,7 @@ class ApiService {
     }
 
     const response = await this.request(`/api/transactions/${transaction.id}`, {
-      method: 'PUT',
+      method: "PUT",
       body: JSON.stringify(transaction),
     });
     return response.data;
@@ -279,7 +291,7 @@ class ApiService {
     }
 
     await this.request(`/api/transactions/${transactionId}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
   }
 
@@ -289,7 +301,7 @@ class ApiService {
       return localStorageService.getInvestments();
     }
 
-    let endpoint = '/api/investments';
+    let endpoint = "/api/investments";
 
     if (filters) {
       const params = new URLSearchParams();
@@ -312,12 +324,12 @@ class ApiService {
     if (this.isTestMode()) {
       return localStorageService.createInvestment({
         ...investment,
-        user_id: 'test-user-001',
+        user_id: "test-user-001",
       });
     }
 
-    const response = await this.request('/api/investments', {
-      method: 'POST',
+    const response = await this.request("/api/investments", {
+      method: "POST",
       body: JSON.stringify(investment),
     });
     return response.data;
@@ -329,7 +341,7 @@ class ApiService {
     }
 
     const response = await this.request(`/api/investments/${investment.id}`, {
-      method: 'PUT',
+      method: "PUT",
       body: JSON.stringify(investment),
     });
     return response.data;
@@ -341,7 +353,7 @@ class ApiService {
     }
 
     await this.request(`/api/investments/${investmentId}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
   }
 
@@ -351,7 +363,7 @@ class ApiService {
       return localStorageService.getGoals();
     }
 
-    let endpoint = '/api/goals';
+    let endpoint = "/api/goals";
 
     if (filters) {
       const params = new URLSearchParams();
@@ -374,13 +386,13 @@ class ApiService {
     if (this.isTestMode()) {
       return localStorageService.createGoal({
         ...goal,
-        user_id: 'test-user-001',
-        status: 'active',
+        user_id: "test-user-001",
+        status: "active",
       });
     }
 
-    const response = await this.request('/api/goals', {
-      method: 'POST',
+    const response = await this.request("/api/goals", {
+      method: "POST",
       body: JSON.stringify(goal),
     });
     return response.data;
@@ -392,7 +404,7 @@ class ApiService {
     }
 
     const response = await this.request(`/api/goals/${goal.id}`, {
-      method: 'PUT',
+      method: "PUT",
       body: JSON.stringify(goal),
     });
     return response.data;
@@ -404,7 +416,7 @@ class ApiService {
     }
 
     await this.request(`/api/goals/${goalId}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
   }
 
@@ -413,7 +425,7 @@ class ApiService {
     if (this.isTestMode()) {
       return localStorageService.getBudgetDivisions();
     }
-    const response = await this.request('/api/budget/divisions');
+    const response = await this.request("/api/budget/divisions");
     return response.data;
   }
 
@@ -421,13 +433,13 @@ class ApiService {
     if (this.isTestMode()) {
       return localStorageService.createBudgetDivision({
         ...division,
-        user_id: 'test-user-001',
+        user_id: "test-user-001",
         sort_order: 0,
       });
     }
 
-    const response = await this.request('/api/budget/divisions', {
-      method: 'POST',
+    const response = await this.request("/api/budget/divisions", {
+      method: "POST",
       body: JSON.stringify(division),
     });
     return response.data;
@@ -438,10 +450,13 @@ class ApiService {
       return localStorageService.updateBudgetDivision(division.id, division);
     }
 
-    const response = await this.request(`/api/budget/divisions/${division.id}`, {
-      method: 'PUT',
-      body: JSON.stringify(division),
-    });
+    const response = await this.request(
+      `/api/budget/divisions/${division.id}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(division),
+      },
+    );
     return response.data;
   }
 
@@ -451,14 +466,14 @@ class ApiService {
     }
 
     await this.request(`/api/budget/divisions/${divisionId}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
   }
 
   // ========== CATEGORIAS DE ORÇAMENTO ==========
   async getBudgetCategories(divisionId?: string) {
-    let endpoint = '/api/budget/categories';
-    
+    let endpoint = "/api/budget/categories";
+
     if (divisionId) {
       endpoint += `?division_id=${divisionId}`;
     }
@@ -468,24 +483,27 @@ class ApiService {
   }
 
   async createBudgetCategory(category: CreateBudgetCategoryRequest) {
-    const response = await this.request('/api/budget/categories', {
-      method: 'POST',
+    const response = await this.request("/api/budget/categories", {
+      method: "POST",
       body: JSON.stringify(category),
     });
     return response.data;
   }
 
   async updateBudgetCategory(category: UpdateBudgetCategoryRequest) {
-    const response = await this.request(`/api/budget/categories/${category.id}`, {
-      method: 'PUT',
-      body: JSON.stringify(category),
-    });
+    const response = await this.request(
+      `/api/budget/categories/${category.id}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(category),
+      },
+    );
     return response.data;
   }
 
   async deleteBudgetCategory(categoryId: string) {
     await this.request(`/api/budget/categories/${categoryId}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
   }
 
@@ -495,7 +513,7 @@ class ApiService {
       return localStorageService.getFGTSBalance();
     }
 
-    const response = await this.request<number>('/api/fgts-balance');
+    const response = await this.request<number>("/api/fgts-balance");
     return response.data || 0;
   }
 
@@ -504,8 +522,8 @@ class ApiService {
       return localStorageService.updateFGTSBalance(amount);
     }
 
-    const response = await this.request<number>('/api/fgts-balance', {
-      method: 'PUT',
+    const response = await this.request<number>("/api/fgts-balance", {
+      method: "PUT",
       body: JSON.stringify({ amount }),
     });
     return response.data || 0;
@@ -514,19 +532,22 @@ class ApiService {
   // ========== BITCOIN PRICE (CoinMarketCap) ==========
   async getBitcoinPrice(): Promise<number> {
     try {
-      const apiKey = (import.meta as any).env?.VITE_COINMARKETCAP_API_KEY || '';
+      const apiKey = (import.meta as any).env?.VITE_COINMARKETCAP_API_KEY || "";
 
       if (!apiKey) {
-        console.warn('CoinMarketCap API key not configured');
+        console.warn("CoinMarketCap API key not configured");
         return 0;
       }
 
-      const response = await fetch('https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest', {
-        headers: {
-          'X-CMC_PRO_API_KEY': apiKey,
-          'Accept': 'application/json',
+      const response = await fetch(
+        "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest",
+        {
+          headers: {
+            "X-CMC_PRO_API_KEY": apiKey,
+            Accept: "application/json",
+          },
         },
-      });
+      );
 
       if (!response.ok) {
         throw new Error(`CoinMarketCap API error: ${response.statusText}`);
@@ -536,7 +557,7 @@ class ApiService {
       const btcPrice = data?.data?.BTC?.quote?.BRL?.price || 0;
       return btcPrice;
     } catch (error) {
-      console.error('Error fetching Bitcoin price:', error);
+      console.error("Error fetching Bitcoin price:", error);
       return 0;
     }
   }

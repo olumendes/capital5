@@ -1,11 +1,23 @@
-import { useState } from 'react';
-import { useFinancial } from '../contexts/FinancialContext';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
-import { DollarSign } from 'lucide-react';
+import { useState } from "react";
+import { useFinancial } from "../contexts/FinancialContext";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import { DollarSign } from "lucide-react";
 
 export default function FGTSBalance() {
   const { fgtsBalance, updateFGTSBalance, isLoading } = useFinancial();
@@ -16,20 +28,20 @@ export default function FGTSBalance() {
   const handleSave = async () => {
     setIsSubmitting(true);
     try {
-      const numAmount = parseFloat(amount.replace(',', '.')) || 0;
+      const numAmount = parseFloat(amount.replace(",", ".")) || 0;
       await updateFGTSBalance(numAmount);
       setIsDialogOpen(false);
     } catch (error) {
-      console.error('Erro ao atualizar FGTS:', error);
+      console.error("Erro ao atualizar FGTS:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL'
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
     }).format(value);
   };
 
@@ -48,7 +60,8 @@ export default function FGTSBalance() {
             {formatCurrency(fgtsBalance)}
           </div>
           <p className="text-sm text-amber-600">
-            ℹ️ Saldo não contabilizado no total, mas pode ser usado para simulações
+            ℹ️ Saldo não contabilizado no total, mas pode ser usado para
+            simulações
           </p>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
@@ -71,7 +84,7 @@ export default function FGTSBalance() {
                       placeholder="0,00"
                       value={amount}
                       onChange={(e) => {
-                        const value = e.target.value.replace(/[^\d.,]/g, '');
+                        const value = e.target.value.replace(/[^\d.,]/g, "");
                         setAmount(value);
                       }}
                       className="pl-10"
@@ -91,7 +104,7 @@ export default function FGTSBalance() {
                     disabled={isSubmitting || isLoading}
                     className="flex-1"
                   >
-                    {isSubmitting ? 'Salvando...' : 'Salvar'}
+                    {isSubmitting ? "Salvando..." : "Salvar"}
                   </Button>
                 </div>
               </div>

@@ -33,7 +33,7 @@ export interface DBCategory {
   name: string;
   icon?: string;
   color?: string;
-  type: 'receita' | 'despesa';
+  type: "receita" | "despesa";
   is_default: boolean;
   created_at: string;
 }
@@ -41,17 +41,17 @@ export interface DBCategory {
 export interface DBTransaction {
   id: string;
   user_id: string;
-  type: 'receita' | 'despesa';
+  type: "receita" | "despesa";
   category_id: string;
   description: string;
   amount: number;
   date: string;
-  source: 'manual' | 'open-finance' | 'importacao';
+  source: "manual" | "open-finance" | "importacao";
   source_details?: string; // JSON
   tags?: string; // JSON array
   is_passive_income?: boolean; // Para receitas passivas
-  income_frequency?: 'diario' | 'semanal' | 'mensal' | 'anual' | 'unico'; // Frequência da renda
-  income_amount_type?: 'R$' | '%'; // Tipo de valor (fixo em R$ ou percentual)
+  income_frequency?: "diario" | "semanal" | "mensal" | "anual" | "unico"; // Frequência da renda
+  income_amount_type?: "R$" | "%"; // Tipo de valor (fixo em R$ ou percentual)
   created_at: string;
   updated_at: string;
 }
@@ -79,7 +79,7 @@ export interface DBGoal {
   current_amount: number;
   target_date?: string;
   description?: string;
-  status: 'active' | 'completed' | 'paused';
+  status: "active" | "completed" | "paused";
   created_at: string;
   updated_at: string;
 }
@@ -129,17 +129,18 @@ export interface DBBudgetAllocation {
 
 // Tipos para requisições da API
 export interface CreateTransactionRequest {
-  type: 'receita' | 'despesa';
+  type: "receita" | "despesa";
   category_id: string;
   description: string;
   amount: number;
   date: string;
-  source?: 'manual' | 'open-finance' | 'importacao';
+  source?: "manual" | "open-finance" | "importacao";
   source_details?: any;
   tags?: string[];
 }
 
-export interface UpdateTransactionRequest extends Partial<CreateTransactionRequest> {
+export interface UpdateTransactionRequest
+  extends Partial<CreateTransactionRequest> {
   id: string;
 }
 
@@ -154,7 +155,8 @@ export interface CreateInvestmentRequest {
   notes?: string;
 }
 
-export interface UpdateInvestmentRequest extends Partial<CreateInvestmentRequest> {
+export interface UpdateInvestmentRequest
+  extends Partial<CreateInvestmentRequest> {
   id: string;
 }
 
@@ -168,7 +170,7 @@ export interface CreateGoalRequest {
 export interface UpdateGoalRequest extends Partial<CreateGoalRequest> {
   id: string;
   current_amount?: number;
-  status?: 'active' | 'completed' | 'paused';
+  status?: "active" | "completed" | "paused";
 }
 
 export interface CreateBudgetDivisionRequest {
@@ -179,7 +181,8 @@ export interface CreateBudgetDivisionRequest {
   sort_order?: number;
 }
 
-export interface UpdateBudgetDivisionRequest extends Partial<CreateBudgetDivisionRequest> {
+export interface UpdateBudgetDivisionRequest
+  extends Partial<CreateBudgetDivisionRequest> {
   id: string;
 }
 
@@ -191,7 +194,8 @@ export interface CreateBudgetCategoryRequest {
   color?: string;
 }
 
-export interface UpdateBudgetCategoryRequest extends Partial<CreateBudgetCategoryRequest> {
+export interface UpdateBudgetCategoryRequest
+  extends Partial<CreateBudgetCategoryRequest> {
   id: string;
   spent_amount?: number;
 }
@@ -241,9 +245,9 @@ export interface AuthenticatedRequest {
 export interface TransactionFilters {
   start_date?: string;
   end_date?: string;
-  type?: 'receita' | 'despesa';
+  type?: "receita" | "despesa";
   category_id?: string;
-  source?: 'manual' | 'open-finance' | 'importacao';
+  source?: "manual" | "open-finance" | "importacao";
   min_amount?: number;
   max_amount?: number;
   search?: string;
@@ -259,7 +263,7 @@ export interface InvestmentFilters {
 }
 
 export interface GoalFilters {
-  status?: 'active' | 'completed' | 'paused';
+  status?: "active" | "completed" | "paused";
   page?: number;
   limit?: number;
 }
