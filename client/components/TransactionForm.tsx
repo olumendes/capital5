@@ -33,6 +33,9 @@ export default function TransactionForm({ onSuccess, onCancel, initialType = 'de
     isInstallment: false,
     installments: 1,
     installmentDescription: '',
+    isPassiveIncome: false,
+    incomeFrequency: 'mensal' as 'diario' | 'semanal' | 'mensal' | 'anual' | 'unico',
+    incomeAmountType: 'R$' as 'R$' | '%',
   });
   
   const [errors, setErrors] = useState<Record<string, string>>({});
