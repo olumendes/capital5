@@ -347,8 +347,12 @@ class ApiService {
 
   // ========== OBJETIVOS ==========
   async getGoals(filters?: any) {
+    if (this.isTestMode()) {
+      return localStorageService.getGoals();
+    }
+
     let endpoint = '/api/goals';
-    
+
     if (filters) {
       const params = new URLSearchParams();
       Object.entries(filters).forEach(([key, value]) => {
@@ -356,7 +360,7 @@ class ApiService {
           params.append(key, value.toString());
         }
       });
-      
+
       if (params.toString()) {
         endpoint += `?${params.toString()}`;
       }
@@ -367,6 +371,14 @@ class ApiService {
   }
 
   async createGoal(goal: CreateGoalRequest) {
+    if (this.isTestMode()) {
+      return localStorageService.createGoal({
+        ...goal,
+        user_id: 'test-user-001',
+        status: 'active',
+      });
+    }
+
     const response = await this.request('/api/goals', {
       method: 'POST',
       body: JSON.stringify(goal),
@@ -375,6 +387,10 @@ class ApiService {
   }
 
   async updateGoal(goal: UpdateGoalRequest) {
+    if (this.isTestMode()) {
+      return localStorageService.updateGoal(goal.id, goal);
+    }
+
     const response = await this.request(`/api/goals/${goal.id}`, {
       method: 'PUT',
       body: JSON.stringify(goal),
@@ -383,6 +399,10 @@ class ApiService {
   }
 
   async deleteGoal(goalId: string) {
+    if (this.isTestMode()) {
+      return localStorageService.deleteGoal(goalId);
+    }
+
     await this.request(`/api/goals/${goalId}`, {
       method: 'DELETE',
     });
