@@ -159,12 +159,31 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setState(prev => ({ ...prev, error: null }));
   };
 
+  const testLogin = () => {
+    // Create a test user without actually logging in to the backend
+    const testUser: User = {
+      id: 'test-user-' + Date.now(),
+      email: 'teste@capital.local',
+      name: 'Usuário Teste',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+
+    setState({
+      user: testUser,
+      isLoading: false,
+      isAuthenticated: true,
+      error: null
+    });
+  };
+
   const value: AuthContextType = {
     ...state,
     login,
     register,
     logout,
-    clearError
+    clearError,
+    testLogin
   };
 
   return (
