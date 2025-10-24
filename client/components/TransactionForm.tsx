@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useFinancial } from '../contexts/FinancialContext';
-import { TransactionType, Transaction } from '@shared/financial-types';
+import { TransactionType, Transaction, RecurringFrequency, RecurringType } from '@shared/financial-types';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -11,7 +11,7 @@ import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Badge } from './ui/badge';
 import { Checkbox } from './ui/checkbox';
 import CategoryModal from './CategoryModal';
-import { PlusCircle, DollarSign, CalendarDays } from 'lucide-react';
+import { PlusCircle, DollarSign, CalendarDays, TrendingUp } from 'lucide-react';
 
 interface TransactionFormProps {
   onSuccess?: () => void;
