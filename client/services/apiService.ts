@@ -1,9 +1,9 @@
-import { 
-  User, 
-  UserCreate, 
-  UserLogin, 
-  AuthResponse, 
-  ApiResponse, 
+import {
+  User,
+  UserCreate,
+  UserLogin,
+  AuthResponse,
+  ApiResponse,
   PaginatedResponse,
   CreateTransactionRequest,
   UpdateTransactionRequest,
@@ -17,10 +17,16 @@ import {
   UpdateBudgetCategoryRequest,
   TransactionFilters
 } from '@shared/database-types';
+import { localStorageService } from './localStorageService';
 
 class ApiService {
   private baseUrl: string;
   private token: string | null = null;
+
+  private isTestMode(): boolean {
+    if (typeof window === 'undefined') return false;
+    return sessionStorage.getItem('testMode') === 'true';
+  }
 
   constructor() {
     // Detectar base da API (permite override por env)
