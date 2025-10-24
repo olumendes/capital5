@@ -251,6 +251,30 @@ export function FinancialProvider({ children }: FinancialProviderProps) {
     }
   }, [isAuthenticated, user]);
 
+  const getFGTSBalance = async () => {
+    await loadFGTSBalance();
+  };
+
+  const updateFGTSBalance = async (amount: number) => {
+    if (!isAuthenticated) {
+      dispatch({ type: 'SET_ERROR', payload: 'Usuário não autenticado' });
+      return;
+    }
+
+    dispatch({ type: 'SET_LOADING', payload: true });
+
+    try {
+      const newBalance = await apiService.updateFGTSBalance(amount);
+      dispatch({ type: 'SET_FGTS_BALANCE', payload: newBalance });
+      dispatch({ type: 'SET_ERROR', payload: null });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erro ao atualizar saldo FGTS';
+      dispatch({ type: 'SET_ERROR', payload: message });
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
+    }
+  };
+
   const addTransaction = async (transactionData: Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'>) => {
     if (!isAuthenticated) {
       dispatch({ type: 'SET_ERROR', payload: 'Usuário não autenticado' });
