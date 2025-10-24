@@ -14,6 +14,7 @@ interface AuthContextType extends AuthState {
   register: (userData: UserCreate) => Promise<boolean>;
   logout: () => void;
   clearError: () => void;
+  testLogin: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
