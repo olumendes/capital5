@@ -488,6 +488,58 @@ class ApiService {
       method: 'DELETE',
     });
   }
+
+  // ========== SALDO FGTS ==========
+  async getFGTSBalance(): Promise<number> {
+    if (this.isTestMode()) {
+      return localStorageService.getFGTSBalance();
+    }
+
+    const response = await this.request<number>('/api/fgts-balance');
+    return response.data || 0;
+  }
+
+  async updateFGTSBalance(amount: number): Promise<number> {
+    if (this.isTestMode()) {
+      return localStorageService.updateFGTSBalance(amount);
+    }
+
+    const response = await this.request<number>('/api/fgts-balance', {
+      method: 'PUT',
+      body: JSON.stringify({ amount }),
+    });
+    return response.data || 0;
+  }
+
+  // ========== BITCOIN PRICE (CoinMarketCap) ==========
+  async getBitcoinPrice(): Promise<number> {
+    try {
+      const apiKey = (import.meta as any).env?.VITE_COINMARKETCAP_API_KEY || '';
+
+      if (!apiKey) {
+        console.warn('CoinMarketCap API key not configured');
+        return 0;
+      }
+
+      const response = await fetch('https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest', {
+        headers: {
+          'X-CMC_PRO_API_KEY': apiKey,
+          'Accept': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`CoinMarketCap API error: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const btcPrice = data?.data?.BTC?.quote?.BRL?.price || 0;
+      return btcPrice;
+    } catch (error) {
+      console.error('Error fetching Bitcoin price:', error);
+      return 0;
+    }
+  }
 }
 
 // Singleton instance
