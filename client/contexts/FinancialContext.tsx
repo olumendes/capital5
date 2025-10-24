@@ -18,6 +18,7 @@ interface FinancialState {
   filters: FilterOptions;
   isLoading: boolean;
   error: string | null;
+  fgtsBalance: number;
 }
 
 type FinancialAction = 
