@@ -1,9 +1,9 @@
-import { 
-  User, 
-  UserCreate, 
-  UserLogin, 
-  AuthResponse, 
-  ApiResponse, 
+import {
+  User,
+  UserCreate,
+  UserLogin,
+  AuthResponse,
+  ApiResponse,
   PaginatedResponse,
   CreateTransactionRequest,
   UpdateTransactionRequest,
@@ -15,8 +15,8 @@ import {
   UpdateBudgetDivisionRequest,
   CreateBudgetCategoryRequest,
   UpdateBudgetCategoryRequest,
-  TransactionFilters
-} from '@shared/database-types';
+  TransactionFilters,
+} from "@shared/database-types";
 
 class ApiService {
   private baseUrl: string;
@@ -25,13 +25,17 @@ class ApiService {
   constructor() {
     // Detectar base da API (permite override por env)
     // Ex.: defina VITE_API_BASE_URL para apontar para seu Worker/Netlify Functions
-    const envBase = (typeof import.meta !== 'undefined' && (import.meta as any).env && (import.meta as any).env.VITE_API_BASE_URL) || undefined;
-    if (envBase && typeof envBase === 'string' && envBase.trim().length > 0) {
-      this.baseUrl = envBase.replace(/\/$/, '');
-    } else if (typeof window !== 'undefined' && window.location?.origin) {
+    const envBase =
+      (typeof import.meta !== "undefined" &&
+        (import.meta as any).env &&
+        (import.meta as any).env.VITE_API_BASE_URL) ||
+      undefined;
+    if (envBase && typeof envBase === "string" && envBase.trim().length > 0) {
+      this.baseUrl = envBase.replace(/\/$/, "");
+    } else if (typeof window !== "undefined" && window.location?.origin) {
       this.baseUrl = window.location.origin;
     } else {
-      this.baseUrl = 'http://localhost:5173';
+      this.baseUrl = "http://localhost:5173";
     }
 
     // Carregar token do localStorage
@@ -39,32 +43,32 @@ class ApiService {
   }
 
   private loadToken() {
-    if (typeof window !== 'undefined') {
-      this.token = localStorage.getItem('auth-token');
+    if (typeof window !== "undefined") {
+      this.token = localStorage.getItem("auth-token");
     }
   }
 
   private saveToken(token: string) {
     this.token = token;
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('auth-token', token);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("auth-token", token);
     }
   }
 
   private clearToken() {
     this.token = null;
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('auth-token');
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("auth-token");
     }
   }
 
   private getHeaders(): Record<string, string> {
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     };
 
     if (this.token) {
-      headers['Authorization'] = `Bearer ${this.token}`;
+      headers["Authorization"] = `Bearer ${this.token}`;
     }
 
     return headers;
@@ -72,7 +76,7 @@ class ApiService {
 
   private async request<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseUrl}${endpoint}`;
 
@@ -86,23 +90,23 @@ class ApiService {
 
     try {
       const response = await fetch(url, config);
-      const contentType = response.headers.get('content-type') || '';
-      const isJson = contentType.includes('application/json');
+      const contentType = response.headers.get("content-type") || "";
+      const isJson = contentType.includes("application/json");
 
       let body: any;
       try {
         body = isJson ? await response.json() : await response.text();
       } catch (parseError) {
         // If body parsing fails, treat as empty
-        body = isJson ? {} : '';
+        body = isJson ? {} : "";
       }
 
       if (!response.ok) {
         // Extrair mensagem amigável do corpo
         let message: string;
-        if (isJson && typeof body === 'object') {
+        if (isJson && typeof body === "object") {
           message = body?.error || body?.message || `HTTP ${response.status}`;
-        } else if (typeof body === 'string' && body.trim().length) {
+        } else if (typeof body === "string" && body.trim().length) {
           message = body;
         } else {
           message = `HTTP ${response.status}`;
@@ -117,15 +121,15 @@ class ApiService {
 
       return body as ApiResponse<T>;
     } catch (error) {
-      console.error('API Error:', error);
+      console.error("API Error:", error);
       throw error;
     }
   }
 
   // ========== AUTENTICAÇÃO ==========
   async register(userData: UserCreate): Promise<AuthResponse> {
-    const response = await this.request<AuthResponse>('/api/auth/register', {
-      method: 'POST',
+    const response = await this.request<AuthResponse>("/api/auth/register", {
+      method: "POST",
       body: JSON.stringify(userData),
     });
 
@@ -137,8 +141,8 @@ class ApiService {
   }
 
   async login(credentials: UserLogin): Promise<AuthResponse> {
-    const response = await this.request<AuthResponse>('/api/auth/login', {
-      method: 'POST',
+    const response = await this.request<AuthResponse>("/api/auth/login", {
+      method: "POST",
       body: JSON.stringify(credentials),
     });
 
@@ -155,8 +159,8 @@ class ApiService {
     }
 
     try {
-      const response = await this.request<AuthResponse>('/api/auth/verify', {
-        method: 'POST',
+      const response = await this.request<AuthResponse>("/api/auth/verify", {
+        method: "POST",
       });
 
       return response.data?.user || null;
@@ -177,13 +181,13 @@ class ApiService {
 
   // ========== CATEGORIAS ==========
   async getCategories() {
-    const response = await this.request('/api/categories');
+    const response = await this.request("/api/categories");
     return response.data;
   }
 
   async createCategory(category: any) {
-    const response = await this.request('/api/categories', {
-      method: 'POST',
+    const response = await this.request("/api/categories", {
+      method: "POST",
       body: JSON.stringify(category),
     });
     return response.data;
@@ -191,14 +195,14 @@ class ApiService {
 
   async deleteCategory(categoryId: string) {
     await this.request(`/api/categories/${categoryId}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
   }
 
   // ========== TRANSAÇÕES ==========
   async getTransactions(filters?: TransactionFilters) {
-    let endpoint = '/api/transactions';
-    
+    let endpoint = "/api/transactions";
+
     if (filters) {
       const params = new URLSearchParams();
       Object.entries(filters).forEach(([key, value]) => {
@@ -206,7 +210,7 @@ class ApiService {
           params.append(key, value.toString());
         }
       });
-      
+
       if (params.toString()) {
         endpoint += `?${params.toString()}`;
       }
@@ -217,8 +221,8 @@ class ApiService {
   }
 
   async createTransaction(transaction: CreateTransactionRequest) {
-    const response = await this.request('/api/transactions', {
-      method: 'POST',
+    const response = await this.request("/api/transactions", {
+      method: "POST",
       body: JSON.stringify(transaction),
     });
     return response.data;
@@ -226,7 +230,7 @@ class ApiService {
 
   async updateTransaction(transaction: UpdateTransactionRequest) {
     const response = await this.request(`/api/transactions/${transaction.id}`, {
-      method: 'PUT',
+      method: "PUT",
       body: JSON.stringify(transaction),
     });
     return response.data;
@@ -234,14 +238,14 @@ class ApiService {
 
   async deleteTransaction(transactionId: string) {
     await this.request(`/api/transactions/${transactionId}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
   }
 
   // ========== INVESTIMENTOS ==========
   async getInvestments(filters?: any) {
-    let endpoint = '/api/investments';
-    
+    let endpoint = "/api/investments";
+
     if (filters) {
       const params = new URLSearchParams();
       Object.entries(filters).forEach(([key, value]) => {
@@ -249,7 +253,7 @@ class ApiService {
           params.append(key, value.toString());
         }
       });
-      
+
       if (params.toString()) {
         endpoint += `?${params.toString()}`;
       }
@@ -260,8 +264,8 @@ class ApiService {
   }
 
   async createInvestment(investment: CreateInvestmentRequest) {
-    const response = await this.request('/api/investments', {
-      method: 'POST',
+    const response = await this.request("/api/investments", {
+      method: "POST",
       body: JSON.stringify(investment),
     });
     return response.data;
@@ -269,7 +273,7 @@ class ApiService {
 
   async updateInvestment(investment: UpdateInvestmentRequest) {
     const response = await this.request(`/api/investments/${investment.id}`, {
-      method: 'PUT',
+      method: "PUT",
       body: JSON.stringify(investment),
     });
     return response.data;
@@ -277,14 +281,14 @@ class ApiService {
 
   async deleteInvestment(investmentId: string) {
     await this.request(`/api/investments/${investmentId}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
   }
 
   // ========== OBJETIVOS ==========
   async getGoals(filters?: any) {
-    let endpoint = '/api/goals';
-    
+    let endpoint = "/api/goals";
+
     if (filters) {
       const params = new URLSearchParams();
       Object.entries(filters).forEach(([key, value]) => {
@@ -292,7 +296,7 @@ class ApiService {
           params.append(key, value.toString());
         }
       });
-      
+
       if (params.toString()) {
         endpoint += `?${params.toString()}`;
       }
@@ -303,8 +307,8 @@ class ApiService {
   }
 
   async createGoal(goal: CreateGoalRequest) {
-    const response = await this.request('/api/goals', {
-      method: 'POST',
+    const response = await this.request("/api/goals", {
+      method: "POST",
       body: JSON.stringify(goal),
     });
     return response.data;
@@ -312,7 +316,7 @@ class ApiService {
 
   async updateGoal(goal: UpdateGoalRequest) {
     const response = await this.request(`/api/goals/${goal.id}`, {
-      method: 'PUT',
+      method: "PUT",
       body: JSON.stringify(goal),
     });
     return response.data;
@@ -320,42 +324,45 @@ class ApiService {
 
   async deleteGoal(goalId: string) {
     await this.request(`/api/goals/${goalId}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
   }
 
   // ========== DIVISÃO FINANCEIRA ==========
   async getBudgetDivisions() {
-    const response = await this.request('/api/budget/divisions');
+    const response = await this.request("/api/budget/divisions");
     return response.data;
   }
 
   async createBudgetDivision(division: CreateBudgetDivisionRequest) {
-    const response = await this.request('/api/budget/divisions', {
-      method: 'POST',
+    const response = await this.request("/api/budget/divisions", {
+      method: "POST",
       body: JSON.stringify(division),
     });
     return response.data;
   }
 
   async updateBudgetDivision(division: UpdateBudgetDivisionRequest) {
-    const response = await this.request(`/api/budget/divisions/${division.id}`, {
-      method: 'PUT',
-      body: JSON.stringify(division),
-    });
+    const response = await this.request(
+      `/api/budget/divisions/${division.id}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(division),
+      },
+    );
     return response.data;
   }
 
   async deleteBudgetDivision(divisionId: string) {
     await this.request(`/api/budget/divisions/${divisionId}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
   }
 
   // ========== CATEGORIAS DE ORÇAMENTO ==========
   async getBudgetCategories(divisionId?: string) {
-    let endpoint = '/api/budget/categories';
-    
+    let endpoint = "/api/budget/categories";
+
     if (divisionId) {
       endpoint += `?division_id=${divisionId}`;
     }
@@ -365,24 +372,27 @@ class ApiService {
   }
 
   async createBudgetCategory(category: CreateBudgetCategoryRequest) {
-    const response = await this.request('/api/budget/categories', {
-      method: 'POST',
+    const response = await this.request("/api/budget/categories", {
+      method: "POST",
       body: JSON.stringify(category),
     });
     return response.data;
   }
 
   async updateBudgetCategory(category: UpdateBudgetCategoryRequest) {
-    const response = await this.request(`/api/budget/categories/${category.id}`, {
-      method: 'PUT',
-      body: JSON.stringify(category),
-    });
+    const response = await this.request(
+      `/api/budget/categories/${category.id}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(category),
+      },
+    );
     return response.data;
   }
 
   async deleteBudgetCategory(categoryId: string) {
     await this.request(`/api/budget/categories/${categoryId}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
   }
 }

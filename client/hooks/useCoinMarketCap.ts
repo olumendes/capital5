@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from "react";
 
 export interface CryptoPriceData {
   symbol: string;
@@ -10,12 +10,12 @@ export interface CryptoPriceData {
   lastUpdated: string;
 }
 
-const API_KEY = '94d4a907464a4b79ba039952eff85bb5';
-const BASE_URL = 'https://pro-api.coinmarketcap.com/v1';
+const API_KEY = "94d4a907464a4b79ba039952eff85bb5";
+const BASE_URL = "https://pro-api.coinmarketcap.com/v1";
 // Fallback CORS proxy for development/testing
-const CORS_PROXY = 'https://cors-anywhere.herokuapp.com/';
+const CORS_PROXY = "https://cors-anywhere.herokuapp.com/";
 
-export function useCoinMarketCap(symbol: string = 'BTC') {
+export function useCoinMarketCap(symbol: string = "BTC") {
   const [data, setData] = useState<CryptoPriceData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,33 +34,37 @@ export function useCoinMarketCap(symbol: string = 'BTC') {
       try {
         response = await fetch(url, {
           headers: {
-            'X-CMC_PRO_API_KEY': API_KEY,
-            'Accepts': 'application/json',
+            "X-CMC_PRO_API_KEY": API_KEY,
+            Accepts: "application/json",
           },
         });
       } catch (directError) {
         // If direct fetch fails (CORS), try with CORS proxy
-        console.warn('Direct fetch failed, trying CORS proxy...');
+        console.warn("Direct fetch failed, trying CORS proxy...");
         try {
           response = await fetch(CORS_PROXY + url, {
             headers: {
-              'X-CMC_PRO_API_KEY': API_KEY,
-              'Accepts': 'application/json',
+              "X-CMC_PRO_API_KEY": API_KEY,
+              Accepts: "application/json",
             },
           });
         } catch (proxyError) {
-          throw new Error('Não foi possível conectar à API de preços. Tente novamente mais tarde.');
+          throw new Error(
+            "Não foi possível conectar à API de preços. Tente novamente mais tarde.",
+          );
         }
       }
 
       if (!response || !response.ok) {
-        throw new Error(`API Error: ${response?.status || 'Unknown'} ${response?.statusText || ''}`);
+        throw new Error(
+          `API Error: ${response?.status || "Unknown"} ${response?.statusText || ""}`,
+        );
       }
 
       const result = await response.json();
 
       if (!result.data || !result.data[symbol]) {
-        throw new Error('Símbolo não encontrado');
+        throw new Error("Símbolo não encontrado");
       }
 
       const cryptoData = result.data[symbol];
@@ -77,9 +81,10 @@ export function useCoinMarketCap(symbol: string = 'BTC') {
       });
       setError(null);
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Erro ao buscar preço do Bitcoin';
+      const message =
+        err instanceof Error ? err.message : "Erro ao buscar preço do Bitcoin";
       setError(message);
-      console.error('CoinMarketCap API Error:', err);
+      console.error("CoinMarketCap API Error:", err);
       // Silently fail - this is a non-critical feature
     } finally {
       setLoading(false);
