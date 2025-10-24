@@ -410,11 +410,22 @@ class ApiService {
 
   // ========== DIVISÃO FINANCEIRA ==========
   async getBudgetDivisions() {
+    if (this.isTestMode()) {
+      return localStorageService.getBudgetDivisions();
+    }
     const response = await this.request('/api/budget/divisions');
     return response.data;
   }
 
   async createBudgetDivision(division: CreateBudgetDivisionRequest) {
+    if (this.isTestMode()) {
+      return localStorageService.createBudgetDivision({
+        ...division,
+        user_id: 'test-user-001',
+        sort_order: 0,
+      });
+    }
+
     const response = await this.request('/api/budget/divisions', {
       method: 'POST',
       body: JSON.stringify(division),
@@ -423,6 +434,10 @@ class ApiService {
   }
 
   async updateBudgetDivision(division: UpdateBudgetDivisionRequest) {
+    if (this.isTestMode()) {
+      return localStorageService.updateBudgetDivision(division.id, division);
+    }
+
     const response = await this.request(`/api/budget/divisions/${division.id}`, {
       method: 'PUT',
       body: JSON.stringify(division),
@@ -431,6 +446,10 @@ class ApiService {
   }
 
   async deleteBudgetDivision(divisionId: string) {
+    if (this.isTestMode()) {
+      return localStorageService.deleteBudgetDivision(divisionId);
+    }
+
     await this.request(`/api/budget/divisions/${divisionId}`, {
       method: 'DELETE',
     });
