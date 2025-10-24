@@ -18,6 +18,21 @@ interface AuthContextType extends AuthState {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const isTestMode = () => {
+  const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+  return params.get('testMode') === 'true' || (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_TEST_MODE === 'true');
+};
+
+const createTestUser = (): User => {
+  return {
+    id: 'test-user-001',
+    name: 'Usuário Teste',
+    email: 'test@example.com',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  };
+};
+
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
@@ -41,6 +56,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // Verificar autenticação inicial
   useEffect(() => {
     const checkAuth = async () => {
+      // Verificar modo de teste
+      if (isTestMode()) {
+        const testUser = createTestUser();
+        setState({
+          user: testUser,
+          isLoading: false,
+          isAuthenticated: true,
+          error: null
+        });
+        return;
+      }
+
       if (!apiService.isAuthenticated()) {
         setState(prev => ({ ...prev, isLoading: false }));
         return;
@@ -48,7 +75,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       try {
         const user = await apiService.verifyToken();
-        
+
         if (user) {
           setState({
             user,
