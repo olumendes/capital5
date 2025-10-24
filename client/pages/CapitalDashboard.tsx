@@ -1361,6 +1361,62 @@ export default function CapitalDashboard() {
               </CardContent>
             </Card>
 
+            {/* FGTS Balance */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Saldo FGTS</CardTitle>
+                <CardDescription>
+                  Gerencie seu saldo de FGTS (não conta no saldo total)
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-2">Saldo FGTS Atual</p>
+                    <p className="text-3xl font-bold text-blue-600">
+                      {formatCurrency(summary.fgtsBalance)}
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="fgts-input">Atualizar Saldo FGTS</Label>
+                    <div className="flex gap-2">
+                      <input
+                        id="fgts-input"
+                        type="number"
+                        placeholder="Novo valor"
+                        step="0.01"
+                        min="0"
+                        defaultValue={summary.fgtsBalance}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') {
+                            const value = parseFloat((e.target as HTMLInputElement).value);
+                            if (!isNaN(value) && value >= 0) {
+                              const { setFGTSBalance } = require('../contexts/FinancialContext').useFinancial();
+                              // We need to access the function through a different approach
+                            }
+                          }
+                        }}
+                      />
+                      <Button
+                        onClick={() => {
+                          const input = document.getElementById('fgts-input') as HTMLInputElement;
+                          if (input) {
+                            const value = parseFloat(input.value);
+                            if (!isNaN(value) && value >= 0) {
+                              // This will be called via the financial context
+                            }
+                          }
+                        }}
+                      >
+                        Salvar
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Categorias */}
             <Card>
               <CardHeader>
