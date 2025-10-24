@@ -164,6 +164,7 @@ export default function CapitalDashboard() {
   const [customStartDate, setCustomStartDate] = useState<Date | undefined>();
   const [customEndDate, setCustomEndDate] = useState<Date | undefined>();
   const [selectedMonth, setSelectedMonth] = useState<string>(''); // Para filtro de mês na visão geral
+  const [fgtsInputValue, setFgtsInputValue] = useState<string>(fgtsBalance.toString());
 
   const handleLoadSampleData = async () => {
     if (transactions.length > 0) {
@@ -673,7 +674,7 @@ export default function CapitalDashboard() {
                     <div className="text-center py-8 text-gray-500">
                       <CreditCard className="h-12 w-12 mx-auto mb-4 text-gray-300" />
                       <p>Nenhuma transação encontrada</p>
-                      <p className="text-sm">Adicione sua primeira transação para começar</p>
+                      <p className="text-sm">Adicione sua primeira transa��ão para começar</p>
                     </div>
                   )}
                 </CardContent>
