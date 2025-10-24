@@ -4,6 +4,10 @@ export type TransactionType = 'receita' | 'despesa';
 
 export type TransactionSource = 'manual' | 'open-finance' | 'importacao';
 
+export type RecurringFrequency = 'diaria' | 'semanal' | 'mensal' | 'anual' | 'unica';
+
+export type RecurringType = 'percentual' | 'fixo';
+
 export interface Category {
   id: string;
   name: string;
@@ -30,6 +34,11 @@ export interface Transaction {
   tags?: string[];
   createdAt: string;
   updatedAt: string;
+  // Campos para receitas que geram rendimento
+  isYieldingIncome?: boolean;
+  yieldFrequency?: RecurringFrequency;
+  yieldType?: RecurringType;
+  yieldAmount?: number;
 }
 
 export interface FinancialAccount {
