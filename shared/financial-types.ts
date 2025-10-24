@@ -64,12 +64,17 @@ export interface FinancialSummary {
   totalReceitas: number;
   totalDespesas: number;
   saldoAtual: number;
+  fgtsBalance: number;
   variacaoMensal: number;
   maioresGastos: Array<{
     category: string;
     amount: number;
     percentage: number;
   }>;
+  // Calculados
+  availableBalanceMonth?: number;
+  availableBalanceTotal?: number;
+  investmentValue?: number;
 }
 
 export interface FilterOptions {
