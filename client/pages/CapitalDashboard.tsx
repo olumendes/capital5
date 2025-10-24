@@ -371,7 +371,7 @@ export default function CapitalDashboard() {
 
           <TabsContent value="overview" className="space-y-6">
             {/* KPI Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-2 sm:gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-8 gap-2 sm:gap-4">
               <DashboardCard
                 title="Saldo Mês Atual"
                 value={formatCurrency(summary.availableBalanceMonth)}
@@ -383,6 +383,16 @@ export default function CapitalDashboard() {
                 value={formatCurrency(summary.availableBalanceTotal)}
                 icon={<Building2 />}
                 trend={summary.availableBalanceTotal > 0 ? 'up' : summary.availableBalanceTotal < 0 ? 'down' : 'neutral'}
+              />
+              <DashboardCard
+                title="FGTS"
+                value={formatCurrency(summary.fgtsBalance)}
+                icon={<Building2 />}
+              />
+              <DashboardCard
+                title="Saldo com FGTS"
+                value={formatCurrency((summary.availableBalanceTotal || 0) + summary.fgtsBalance)}
+                icon={<Wallet />}
               />
               <DashboardCard
                 title="Receitas do Mês"
@@ -400,11 +410,6 @@ export default function CapitalDashboard() {
               <DashboardCard
                 title="Investimentos"
                 value={formatCurrency(summary.investmentValue || 0)}
-                icon={<Target />}
-              />
-              <DashboardCard
-                title="Objetivos"
-                value={`${goalsSummary.completedGoals}/${goalsSummary.totalGoals}`}
                 icon={<Target />}
               />
               <DashboardCard
